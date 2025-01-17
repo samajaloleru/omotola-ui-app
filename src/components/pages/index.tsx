@@ -101,7 +101,7 @@ export default function Home(): JSX.Element {
         <div className="flex flex-row items-center justify-between w-full">
           <Link
             to="/games"
-            className="fl mt3 no-underline oswald-font bg-yellow-500 hover-orange w-auto p-3 font-semibold br2"
+            className="fl mt3 no-underline oswald-font hover:bg-secondary hover:text-primary w-auto p-3 font-semibold br2"
           >
             Play Games
           </Link>
@@ -109,11 +109,12 @@ export default function Home(): JSX.Element {
             <img className="h-20" src={logo} alt="Logo" />
           </div>
         </div>
-        <div className="flex w-full font-bold tracking-wide text-yellow text-2xl justify-center capitalize oswald-font">
+        <div className="flex w-full font-bold tracking-wide text-yellow text-2xl justify-center capitalize">
           C.C.C Omotola Cathedral Member Registration
         </div>
 
         <div className="flex flex-col gap-5 items-center lg:w-2/3 w-full">
+          <div className="flex flex-col w-full oswald-font">Please fill the form below</div>
           <div className="bg-secondary text-primary p-3 flex flex-0.7 w-full">
             <div className="flex justify-center items-center flex-col border-2 border-dotted p-3 w-full h-420">
               {imageLoading && <Spinner />}
