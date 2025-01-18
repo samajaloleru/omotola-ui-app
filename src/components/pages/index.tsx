@@ -9,6 +9,7 @@ import SelectField from "../reuseables/select";
 import { daysList, monthsList } from "../../constant";
 import { client } from "../../utils/client";
 import Button from "../reuseables/button";
+import Banner from "../reuseables/banner";
 
 
 export default function Home(): JSX.Element {
