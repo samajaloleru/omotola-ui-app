@@ -9,17 +9,18 @@
 @import url('https://cdn-uicons.flaticon.com/2.1.0/uicons-bold-rounded/css/uicons-bold-rounded.css');
 @import url('https://cdn-uicons.flaticon.com/2.1.0/uicons-bold-straight/css/uicons-bold-straight.css');
 
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Istok+Web:ital,wght@0,400;0,700;1,400;1,700&family=Manrope:wght@200..800&family=Oswald:wght@200..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 body {
   margin: 0;
-  font-family: 'Bebas Neue', serif;
+  font-family: 'Roboto', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.oswald-font {
+/* .oswald-font {
   font-family: 'Oswald', serif;
-}
+} */
 
 .montserrat-font {
   font-family: 'Montserrat', serif;
@@ -59,7 +60,7 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
-    -webkit-text-fill-color: #fff !important;
+    -webkit-text-fill-color: #38023B !important;
 }
 
 input::-webkit-outer-spin-button,

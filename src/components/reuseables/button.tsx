@@ -14,7 +14,6 @@ const Button = ({
     loading,
     hasShadow = true,
 }: ButtonProps) => {
-
     if (loading) {
         return (
             <div className='flex flex-col items-center w-full'>
@@ -26,7 +25,7 @@ const Button = ({
     return (
         <div
             onClick={onPress}
-            className='flex flex-col items-center w-full text-lg bg-secondary hover:bg-white text-primary cursor-pointer p-3'>
+            className='flex flex-col font-bold items-center w-full lg:text-2xl text-lg bg-secondary hover:bg-white text-primary cursor-pointer p-3'>
             <div>{title}</div>
         </div>
     );

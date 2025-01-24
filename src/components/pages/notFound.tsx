@@ -1,8 +1,6 @@
 import { NavLink } from "react-router-dom";
 
 
-import Navbar from "../reuseables/navbar";
-
 const NotFound = () => {
   
   return (

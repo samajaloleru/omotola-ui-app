@@ -3,6 +3,7 @@ import React, { useState } from "react";
 interface InputProps {
   name?: string;
   iconName?: string;
+  title?: string;
   inputRef?: React.RefObject<HTMLInputElement>; // Ref for input field
   className?: string;
   placeholder?: string;
@@ -15,6 +16,7 @@ const SelectField: React.FC<InputProps> = ({
   onChangeText,
   placeholder,
   iconName,
+  title,
   className,
 }) => {
   const [show, setShow] = useState(false);
@@ -30,7 +32,7 @@ const SelectField: React.FC<InputProps> = ({
 
   return (
     <div className={`${className} flex flex-col relative`}>
-      {/* Input Field */}
+      {title && <div className="pb-1 text-sm italic tracking-wide">{title}</div>}
       <div
         onClick={() => setShow(!show)}
         className="flex flex-row items-center py-3 bg-white border-2 border-secondary w-full cursor-pointer"
@@ -56,7 +58,7 @@ const SelectField: React.FC<InputProps> = ({
 
       {/* Dropdown Menu */}
       {show && (
-        <div className="flex flex-col gap-1 bg-white border-2 border-secondary w-full max-h-[7rem] overflow-auto absolute mt-10 z-10">
+        <div className="flex flex-col gap-1 bg-white border-2 border-secondary w-full max-h-[7rem] overflow-auto absolute mt-[5rem] z-10">
           {recordList.length === 0 ? (
             <div className="text-center text-gray-500 py-2">No options</div>
           ) : (

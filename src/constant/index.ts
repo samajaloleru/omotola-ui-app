@@ -1,25 +1,34 @@
-export const BASE_API_URL = process.env.REACT_APP_API_URL
 
 export enum ErrorMessage {
-  INVALID_FIRSTNAME = '⛔ First Name is required',
-  INVALID_LASTNAME = '⛔ Last Name is required',
-  INVALID_EMAIL = '⛔ Email is invalid',
-  INVALID_PASSWORD = '⛔ Your password must contain at least an uppercase, a lowercase and a special character.',
-  SUCCESSFULLY_SYNCED = `✅ Successfully synced`,
+  ERROR_RANK = '⛔ Rank is required',
+  ERROR_EMAIL = '⛔ Email is required',
+  ERROR_PHONE = '⛔ Phone Number is required',
+  ERROR_PICTURE = '⛔ Picture is required',
+  ERROR_FULLNAME = '⛔ Full Name is required',
+  ERROR_DAY = '⛔ Day of Birth is required',
+  ERROR_MONTH = '⛔ Month of Birth is required',
 }
 
+export const SUCCESSFULLY_SUBMITTED = `✅ Form Submitted Successfully`;
+
 export enum ErrorTypes {
+  ERROR_RANK = 'rank',
   ERROR_EMAIL = 'email',
-  ERROR_PASSWORD = 'password',
-  ERROR_FIRSTNAME = 'firstname',
-  ERROR_LASTNAME = 'lastname',
+  ERROR_PHONE = 'mobile',
+  ERROR_PICTURE = 'picture',
+  ERROR_DAY = 'day',
+  ERROR_MONTH = 'month',
+  ERROR_FULLNAME = 'fullname',
 }
 
 export const errorMessageMap: Record<ErrorTypes, ErrorMessage> = {
-  [ErrorTypes.ERROR_EMAIL]: ErrorMessage.INVALID_EMAIL,
-  [ErrorTypes.ERROR_PASSWORD]: ErrorMessage.INVALID_PASSWORD,
-  [ErrorTypes.ERROR_FIRSTNAME]: ErrorMessage.INVALID_FIRSTNAME,
-  [ErrorTypes.ERROR_LASTNAME]: ErrorMessage.INVALID_LASTNAME,
+  [ErrorTypes.ERROR_RANK]: ErrorMessage.ERROR_RANK,
+  [ErrorTypes.ERROR_EMAIL]: ErrorMessage.ERROR_EMAIL,
+  [ErrorTypes.ERROR_PHONE]: ErrorMessage.ERROR_PHONE,
+  [ErrorTypes.ERROR_PICTURE]: ErrorMessage.ERROR_PICTURE,
+  [ErrorTypes.ERROR_FULLNAME]: ErrorMessage.ERROR_FULLNAME,
+  [ErrorTypes.ERROR_DAY]: ErrorMessage.ERROR_DAY,
+  [ErrorTypes.ERROR_MONTH]: ErrorMessage.ERROR_MONTH,
 }
 
 export const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']

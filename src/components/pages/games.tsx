@@ -74,7 +74,7 @@ const Games: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-11/12 h-fit lg:p-10 text-white  rounded-xl">
+    <div className="flex flex-col items-center w-11/12 h-full  lg:p-10 text-white  rounded-xl">
       <div className="flex items-center justify-between w-full pa1">
         <Link
           to="/"
@@ -87,8 +87,8 @@ const Games: React.FC = () => {
         </span>
       </div>
 
-      <div className="flex lg:flex-col flex-row items-center lg:w-2/5">
-        <div className="flex flex-col items-center lg:w-full w-2/5">
+      <div className="flex flex-col items-center lg:w-2/5">
+        <div className="flex flex-col items-center w-full">
           <div className="lg:text-[5rem] text-[3rem] font-semibold">Tic Tac</div>
           <div
             onClick={resetGame}
@@ -97,7 +97,7 @@ const Games: React.FC = () => {
             Reset Game
           </div>
         </div>
-        <div className="flex flex-col items-center mt-10 lg:w-full w-3/5">
+        <div className="flex flex-col items-center mt-10 w-full">
           <div className="flex relative flex-row w-full flex-wrap items-center justify-center">
             {Object.keys(board).map((boxId) => (
               <div
@@ -110,7 +110,7 @@ const Games: React.FC = () => {
                   type="text"
                   value={board[boxId] || ""}
                   readOnly
-                  className="bg-secondary outline-none w-full text-[4rem] text-primary cursor-pointer text-center"
+                  className="bg-secondary outline-none w-full lg:h-[11rem] text-[4rem] text-primary cursor-pointer text-center"
                   onClick={() => handleBoxClick(boxId)}
                 />
               </div>

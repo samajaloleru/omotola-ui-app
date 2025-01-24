@@ -12,8 +12,12 @@ module.exports = {
       'default': '#ffffff',
       'black': '#000000',
       'white': '#ffffff',
+      'light-green': '#A1F651',
+      'green': '#234801',
+      'light-red': '#F46363',
+      'red': '#8F0404',
       'primary': '#38023B',
-      'secondary': '#D8CC34',
+      'secondary': '#FFDF00',
     },
     screens: {
       'xs': '574px',

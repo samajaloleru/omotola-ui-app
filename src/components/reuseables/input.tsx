@@ -11,7 +11,7 @@ const InputField = forwardRef<HTMLInputElement, InputProps>(
   ({ title, type, iconName, placeholder }, ref) => {
     return (
       <div className="flex flex-col gap-1 w-full">
-        {title && <div className="">{title}</div>}
+        {title && <div className="font-medium tracking-wide">{title}</div>}
         <div className="flex flex-row items-center py-3 bg-white border-2 border-secondary w-full">
           {iconName && (
             <i

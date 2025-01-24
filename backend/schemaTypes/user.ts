@@ -4,42 +4,14 @@ export default {
     type: 'document',
     fields: [
         {
-            name: 'rank',
-            title: 'Rank',
-            type: 'string', 
-        },
-        {
-            name: 'fullName',
-            title: 'FullName',
-            type: 'string', 
-        },
-        {
-            name: 'email',
-            title: 'Email Address',
-            type: 'string', 
-        },
-        {
-            name: 'mobile',
-            title: 'Phone No',
-            type: 'string', 
-        },
-        {
-            name: 'day',
-            title: 'Days',
-            type: 'string', 
-        },
-        {
-            name: 'month',
-            title: 'Month',
+            name: 'userName',
+            title: 'UserName',
             type: 'string', 
         },
         {
             name: 'image',
             title: 'Image',
-            type: 'image',
-            options: {
-                hotspot: true
-            }
+            type: 'string', 
         },
     ]
 }

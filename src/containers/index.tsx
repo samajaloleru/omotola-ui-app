@@ -21,7 +21,7 @@ const IndexRoutes = () => {
   // }
   
   return (
-    <div className={`flex flex-col justify-center bg-primary items-center w-full overflow-auto h-full`}>
+    <div className={`flex flex-col justify-center bg-primary items-center w-full overflow-auto h-screen`}>
       <AlertProvider>
         <Alert />  
         <Routes>
