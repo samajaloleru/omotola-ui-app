@@ -1,34 +1,38 @@
 
 export enum ErrorMessage {
   ERROR_RANK = '⛔ Rank is required',
-  ERROR_EMAIL = '⛔ Email is required',
+  // ERROR_EMAIL = '⛔ Email is required',
   ERROR_PHONE = '⛔ Phone Number is required',
   ERROR_PICTURE = '⛔ Picture is required',
   ERROR_FULLNAME = '⛔ Full Name is required',
   ERROR_DAY = '⛔ Day of Birth is required',
   ERROR_MONTH = '⛔ Month of Birth is required',
+  ERROR_HOMEADDRESS = '⛔ Home Address is required',
 }
 
 export const SUCCESSFULLY_SUBMITTED = `✅ Form Submitted Successfully`;
+export const SUCCESSFULLY_UPDATED = `✅ Details Updated Successfully`;
 
 export enum ErrorTypes {
   ERROR_RANK = 'rank',
-  ERROR_EMAIL = 'email',
+  // ERROR_EMAIL = 'email',
   ERROR_PHONE = 'mobile',
   ERROR_PICTURE = 'picture',
   ERROR_DAY = 'day',
   ERROR_MONTH = 'month',
   ERROR_FULLNAME = 'fullname',
+  ERROR_HOMEADDRESS = 'homeaddress',
 }
 
 export const errorMessageMap: Record<ErrorTypes, ErrorMessage> = {
   [ErrorTypes.ERROR_RANK]: ErrorMessage.ERROR_RANK,
-  [ErrorTypes.ERROR_EMAIL]: ErrorMessage.ERROR_EMAIL,
+  // [ErrorTypes.ERROR_EMAIL]: ErrorMessage.ERROR_EMAIL,
   [ErrorTypes.ERROR_PHONE]: ErrorMessage.ERROR_PHONE,
   [ErrorTypes.ERROR_PICTURE]: ErrorMessage.ERROR_PICTURE,
   [ErrorTypes.ERROR_FULLNAME]: ErrorMessage.ERROR_FULLNAME,
   [ErrorTypes.ERROR_DAY]: ErrorMessage.ERROR_DAY,
   [ErrorTypes.ERROR_MONTH]: ErrorMessage.ERROR_MONTH,
+  [ErrorTypes.ERROR_HOMEADDRESS]: ErrorMessage.ERROR_HOMEADDRESS,
 }
 
 export const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']

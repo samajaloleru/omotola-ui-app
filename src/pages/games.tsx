@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-import logo from '../../assets/images/logo.png';
+import logo from '../assets/images/logo.png';
 
 type Player = "X" | "O" | null;
 
@@ -74,7 +74,7 @@ const Games: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-11/12 h-full  lg:p-10 text-white  rounded-xl">
+    <div className="flex flex-col justify-center items-center w-11/12 h-full  lg:p-10 text-white  rounded-xl">
       <div className="flex items-center justify-between w-full pa1">
         <Link
           to="/"

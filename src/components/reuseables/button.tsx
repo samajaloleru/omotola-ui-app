@@ -25,7 +25,7 @@ const Button = ({
     return (
         <div
             onClick={onPress}
-            className='flex flex-col font-bold items-center w-full lg:text-2xl text-lg bg-secondary hover:bg-white text-primary cursor-pointer p-3'>
+            className='flex flex-col font-bold items-center w-full lg:text-xl text-lg bg-secondary hover:bg-white text-primary cursor-pointer p-3 rounded-lg'>
             <div>{title}</div>
         </div>
     );

@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AlertProvider } from '../utils/notification/alertcontext';
 import Alert from '../utils/notification/alert';
 
-import {Games, Home, NotFound} from '../components/pages/_route';
+import {Games, Home, NotFound} from '../pages/_route';
 
 const IndexRoutes = () => {
   // eslint-disable-next-line
@@ -21,7 +21,7 @@ const IndexRoutes = () => {
   // }
   
   return (
-    <div className={`flex flex-col justify-center bg-primary items-center w-full overflow-auto h-screen`}>
+    <div className={`flex flex-col bg-primary items-center w-full overflow-auto h-screen`}>
       <AlertProvider>
         <Alert />  
         <Routes>

@@ -5,17 +5,23 @@ type searchParams = {
   searchTerm?: string,
 }
 
-export const professionalDetailQuery = (professionalId: string) => {
-  const query = `*[_type == "professional" && name == '${professionalId}']{
+type verifyParams = {
+  day: string,
+  month: string,
+  mobile: string,
+}
+
+export const formDetailSearchQuery = ({day, month, mobile} : verifyParams ) => {
+  const query = `*[_type == "formDetail" && day == '${day}' && month == '${month}' && mobile == '${mobile}' ]{
     _id,
-    name,
-    title,
-    body,
-    mainImageUrl,
-    typeOf,
-    role,
-    education,
-    experience,
+    fullName,
+    "imageUrl": image.asset->url,
+    rank,
+    email,
+    mobile,
+    homeAddress,
+    day,
+    month,
     _createdAt
   }`;
   return query;

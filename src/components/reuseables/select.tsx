@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface InputProps {
   name?: string;
   iconName?: string;
+  value?: string | null;
   title?: string;
   inputRef?: React.RefObject<HTMLInputElement>; // Ref for input field
   className?: string;
@@ -17,6 +18,7 @@ const SelectField: React.FC<InputProps> = ({
   placeholder,
   iconName,
   title,
+  value,
   className,
 }) => {
   const [show, setShow] = useState(false);
@@ -29,6 +31,12 @@ const SelectField: React.FC<InputProps> = ({
       onChangeText(value); // Pass the selected value to the parent component
     }
   };
+
+  useEffect(() => {
+    if (value)
+      setSelectedValue(value);
+  }, [value])
+  
 
   return (
     <div className={`${className} flex flex-col relative`}>
