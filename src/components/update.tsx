@@ -349,13 +349,13 @@ export default function Update(): JSX.Element {
             </div>
           </div>
           <div className="grid lg:grid-cols-2 w-full gap-3">
-            <div className="flex flex-col lg:w-1/3 gap-1">
+            <div className="flex flex-col w-full gap-1">
               <div className='font-medium tracking-wide'>
                 Gender
               </div>
               <SelectField iconName="fi-sr-venus-double" disabled={true} recordList={genderList} value={selectedGender} onChangeText={(value) => setSelectedGender(value)} placeholder="Select Gender" />
             </div>
-            <div className="flex flex-col lg:w-2/3 gap-1">
+            <div className="flex flex-col w-full gap-1">
               <div className='font-medium tracking-wide'>
                 What is your rank
               </div>
