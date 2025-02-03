@@ -20,6 +20,7 @@ export const formDetailSearchQuery = ({day, month, mobile} : verifyParams ) => {
     email,
     mobile,
     homeAddress,
+    gender,
     day,
     month,
     _createdAt

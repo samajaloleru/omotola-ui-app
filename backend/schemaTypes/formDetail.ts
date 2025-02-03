@@ -24,6 +24,11 @@ export default {
             type: 'string', 
         },
         {
+            name: 'gender',
+            title: 'Gender',
+            type: 'string', 
+        },
+        {
             name: 'homeAddress',
             title: 'Home Address',
             type: 'string', 

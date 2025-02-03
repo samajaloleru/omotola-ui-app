@@ -5,11 +5,12 @@ interface InputProps {
   iconName?: string;
   value?: string | null;
   title?: string;
-  inputRef?: React.RefObject<HTMLInputElement>; // Ref for input field
+  inputRef?: React.RefObject<HTMLInputElement>;
   className?: string;
   placeholder?: string;
-  recordList?: string[];
-  onChangeText?: (value: string) => void; // Callback for passing selected value
+  disabled?: boolean; // Added disabled prop
+  recordList?: string[] | null;
+  onChangeText?: (value: string) => void;
 }
 
 const SelectField: React.FC<InputProps> = ({
@@ -19,67 +20,48 @@ const SelectField: React.FC<InputProps> = ({
   iconName,
   title,
   value,
+  disabled = false, // Default to false
   className,
 }) => {
   const [show, setShow] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
 
   const handleSelect = (value: string) => {
-    setSelectedValue(value); // Update the local selected value
-    setShow(false); // Close the dropdown
+    if (disabled) return; // Prevent selection if disabled
+    setSelectedValue(value);
+    setShow(false);
     if (onChangeText) {
-      onChangeText(value); // Pass the selected value to the parent component
+      onChangeText(value);
     }
   };
 
   useEffect(() => {
-    if (value)
-      setSelectedValue(value);
-  }, [value])
-  
+    if (value) setSelectedValue(value);
+  }, [value]);
 
   return (
     <div className={`${className} flex flex-col relative`}>
       {title && <div className="pb-1 text-sm italic tracking-wide">{title}</div>}
-      <div
-        onClick={() => setShow(!show)}
-        className="flex flex-row items-center py-3 bg-white border-2 border-secondary w-full cursor-pointer"
-      >
-        {iconName && (
-            <i
-              className={`fi ${iconName} text-center px-2 mb-[-.3rem] text-lg text-primary border-r border-primary`}
-            ></i>
-          )}
-        <input
-          type="text"
-          readOnly
-          value={selectedValue || ""}
-          placeholder={placeholder}
-          className="outline-none px-2 bg-transparent text-primary w-full"
-        />
-        <i
-          className={`fi ${
-            show ? "fi-sr-caret-up" : "fi-sr-caret-down"
-          } text-center px-2 mb-[-.3rem] text-lg text-primary`}
-        ></i>
-      </div>
 
       {/* Dropdown Menu */}
-      {show && (
-        <div className="flex flex-col gap-1 bg-white border-2 border-secondary w-full max-h-[7rem] overflow-auto absolute mt-[5rem] z-10">
-          {recordList.length === 0 ? (
+      {show && !disabled && (
+        <div className="flex flex-col gap-1 bg-white border-2 border-secondary w-full max-h-[9rem] overflow-auto absolute bottom-[4rem] z-10">
+          {recordList && recordList.length === 0 ? (
             <div className="text-center text-gray-500 py-2">No options</div>
           ) : (
+            recordList &&
             recordList.map((el) => (
               <div
                 key={el}
                 onClick={() => handleSelect(el)}
                 className={`${
                   el === recordList.at(-1) ? "" : "border-b border-secondary"
-                } flex flex-row capitalize justify-between items-center text-primary px-3 py-2 cursor-pointer hover:bg-gray-100`}
+                } flex flex-row capitalize justify-between items-center text-primary px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                  disabled ? "cursor-not-allowed text-gray-400" : ""
+                }`}
               >
                 {el}
-                {selectedValue === el && (
+                {selectedValue === el && !disabled && (
                   <i className="fi fi-sr-check-circle text-green-500"></i>
                 )}
               </div>
@@ -87,6 +69,38 @@ const SelectField: React.FC<InputProps> = ({
           )}
         </div>
       )}
+
+      <div
+        onClick={() => !disabled && setShow(!show)}
+        className={`flex flex-row items-center py-3 border-2 w-full cursor-pointer ${
+          disabled ? "bg-gray-300 border-gray-400 cursor-not-allowed" : "bg-white border-secondary"
+        }`}
+      >
+        {iconName && (
+          <i
+            className={`fi ${iconName} text-center px-2 mb-[-.3rem] text-lg border-r ${
+              disabled ? "text-gray-400 border-gray-400" : "text-primary border-primary"
+            }`}
+          ></i>
+        )}
+        <input
+          type="text"
+          readOnly
+          value={selectedValue || ""}
+          placeholder={placeholder}
+          className={`outline-none px-2 bg-transparent w-full ${
+            disabled ? "text-gray-400 cursor-not-allowed" : "text-primary"
+          }`}
+          disabled={disabled}
+        />
+        <i
+          className={`fi ${
+            show ? "fi-sr-caret-up" : "fi-sr-caret-down"
+          } text-center px-2 mb-[-.3rem] text-lg ${
+            disabled ? "text-gray-400" : "text-primary"
+          }`}
+        ></i>
+      </div>
     </div>
   );
 };

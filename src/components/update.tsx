@@ -4,7 +4,7 @@ import { MdDelete } from "react-icons/md";
 import Spinner from "../components/reuseables/spinner"; // Import your spinner component
 import InputField from "../components/reuseables/input";
 import SelectField from "../components/reuseables/select";
-import { daysList, errorMessageMap, ErrorTypes, monthsList, SUCCESSFULLY_UPDATED } from "../constant";
+import { daysList, errorMessageMap, ErrorTypes, femaleRankList, genderList, maleRankList, monthsList, SUCCESSFULLY_UPDATED } from "../constant";
 import { client } from "../utils/client";
 import Button from "../components/reuseables/button";
 import { useAlert } from "../utils/notification/alertcontext";
@@ -29,8 +29,10 @@ export default function Update(): JSX.Element {
   const [wrongimageType, setWrongImageType] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [selectedRank, setSelectedRank] = useState<string | null>(null);
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const [rankList, setRankList] = useState<string[] | null>(null);
 
-  const rankRef = useRef<HTMLInputElement>(null);
   const fullNameRef = useRef<HTMLInputElement>(null);
   const homeAddressRef = useRef<HTMLInputElement>(null);
   const mobileRef = useRef<HTMLInputElement>(null);
@@ -66,13 +68,14 @@ export default function Update(): JSX.Element {
   const onSubmit = async () => {
     setLoading(true); // Set loading to true at the start
     const newBody = {
-        rank: rankRef.current?.value || "",
-        fullname: fullNameRef.current?.value || "",
-        homeaddress: homeAddressRef.current?.value || "",
-        mobile: mobileRef.current?.value || "",
-        email: emailRef.current?.value || "",
-        day: selectedDay || "",
-        month: selectedMonth || "",
+      rank: selectedRank || "",
+      gender: selectedGender || "",
+      fullname: fullNameRef.current?.value || "",
+      homeaddress: homeAddressRef.current?.value || "",
+      mobile: mobileRef.current?.value || "",
+      email: emailRef.current?.value || "",
+      day: selectedDay || "",
+      month: selectedMonth || "",
     };
 
     const errorMessages: string[] = []; // Collect all error messages
@@ -101,7 +104,7 @@ export default function Update(): JSX.Element {
         return; // Stop execution
     }
     const id = formDetail?._id
-    const { rank, fullname, homeaddress, mobile, email, day, month } = newBody;
+    const { rank, fullname, homeaddress, gender, email, day, month } = newBody;
     
     if(id) {
       if(imageAsset?._id) {
@@ -163,7 +166,6 @@ export default function Update(): JSX.Element {
 
   const handleResetForm = () => {
     // Clear input fields
-    if (rankRef.current) rankRef.current.value = "";
     if (fullNameRef.current) fullNameRef.current.value = "";
     if (homeAddressRef.current) homeAddressRef.current.value = "";
     if (mobileRef.current) mobileRef.current.value = "";
@@ -171,6 +173,8 @@ export default function Update(): JSX.Element {
 
     // Reset state variables
     setImageAsset(null);
+    setSelectedRank(null);
+    setSelectedGender(null);
     setSelectedDay(null);
     setSelectedMonth(null);
     setWrongImageType(false);
@@ -229,22 +233,29 @@ export default function Update(): JSX.Element {
 
   useEffect(() => {
     if (formDetail) {
-      rankRef.current && (rankRef.current.value = formDetail.rank || "");
       fullNameRef.current && (fullNameRef.current.value = formDetail.fullName || "");
       emailRef.current && (emailRef.current.value = formDetail.email || "");
       mobileRef.current && (mobileRef.current.value = formDetail.mobile || "");
       homeAddressRef.current && (homeAddressRef.current.value = formDetail.homeAddress || "");
-
-      if (formDetail.day) {
-        setSelectedDay(formDetail.day);
-      }
-      if (formDetail.month) {
-        setSelectedMonth(formDetail.month);
-      }
+  
+      if (formDetail.day) setSelectedDay(formDetail.day);
+      if (formDetail.month) setSelectedMonth(formDetail.month);
+      if (formDetail.gender) setSelectedGender(formDetail.gender);
+      if (formDetail.rank) setSelectedRank(formDetail.rank);
     }
   }, [formDetail]);
   
-
+  useEffect(() => {
+    if (selectedGender) {
+      setSelectedRank(null)
+      if(selectedGender === 'Male')
+        return setRankList(maleRankList)
+      
+      if(selectedGender === 'Female')
+        return setRankList(femaleRankList)
+    }
+  }, [selectedGender])
+  
   return (
     <div className="flex flex-col items-center w-full gap-5">
       {!formDetail &&
@@ -337,13 +348,20 @@ export default function Update(): JSX.Element {
               )}
             </div>
           </div>
-          <InputField
-            type="text"
-            title="What is your rank"
-            iconName="fi-sr-ranking-podium"
-            placeholder="What is your rank? (e.g Cape. Eld.)"
-            ref={rankRef}
-          />
+          <div className="grid lg:grid-cols-2 w-full gap-3">
+            <div className="flex flex-col lg:w-1/3 gap-1">
+              <div className='font-medium tracking-wide'>
+                Gender
+              </div>
+              <SelectField iconName="fi-sr-venus-double" disabled={true} recordList={genderList} value={selectedGender} onChangeText={(value) => setSelectedGender(value)} placeholder="Select Gender" />
+            </div>
+            <div className="flex flex-col lg:w-2/3 gap-1">
+              <div className='font-medium tracking-wide'>
+                What is your rank
+              </div>
+              <SelectField iconName="fi-sr-ranking-podium" recordList={rankList} value={selectedRank} onChangeText={(value) => setSelectedRank(value)} placeholder="Select your Rank" />
+            </div>
+          </div>
           <InputField
             type="text"
             title="Full Name"
@@ -375,13 +393,13 @@ export default function Update(): JSX.Element {
             placeholder="Enter your home address"
             ref={homeAddressRef}
           />
-          <div className="flex flex-col w-full gap-1 mb-5">
+          <div className="flex flex-col w-full gap-1">
             <div className='font-medium tracking-wide'>
               Date of Birth
             </div>
             <div className="flex flex-row w-full gap-3">
-              <SelectField className="w-1/3" iconName="fi-sr-calendar-clock" title="Day" recordList={daysList} value={selectedDay} onChangeText={(value) => setSelectedDay(value)} placeholder="Day" />
-              <SelectField className="w-2/3" iconName="fi-sr-calendar-clock" title="Month" recordList={monthsList} value={selectedMonth} onChangeText={(value) => setSelectedMonth(value)} placeholder="Month" />
+              <SelectField className="w-1/3" iconName="fi-sr-calendar-clock" title="Day" value={selectedDay} recordList={daysList} onChangeText={(value) => setSelectedDay(value)} placeholder="Day" />
+              <SelectField className="w-2/3" iconName="fi-sr-calendar-clock" title="Month" value={selectedMonth} recordList={monthsList} onChangeText={(value) => setSelectedMonth(value)} placeholder="Month" />
             </div>
           </div>
             
