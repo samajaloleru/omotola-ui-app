@@ -1,26 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import logo from "../assets/images/logo.png";
 import Button from "../components/reuseables/button";
-import { useAlert } from "../utils/notification/alertcontext";
 import Create from "../components/create";
 import Update from "../components/update";
 
 
 export default function Home(): JSX.Element {
-  const { addAlert } = useAlert();
   const [viewMode, setViewMode] = useState<"home" | "create" | "update">("home");
  
   return (
     <div className={`flex flex-col items-center w-11/12 z-30 text-white pt-10`} >
         <div className="flex flex-col items-center lg:w-3/5 w-full lg:p-10 gap-5">
           <div className="flex flex-row items-center justify-between w-full">
-            <Link
-              to="/games"
-              className="fl mt3 no-underline oswald-font hover:bg-secondary hover:text-primary w-auto p-3 font-semibold br2"
-            >
-              Play Games
-            </Link>
             <div className="fr-ns right-0-ns">
               <img className="h-20" src={logo} alt="Logo" />
             </div>

@@ -9,16 +9,10 @@ import { client } from "../utils/client";
 import Button from "../components/reuseables/button";
 import { useAlert } from "../utils/notification/alertcontext";
 import { validateEmail } from "../utils/common";
-import { ERROR_EMAIL_INVALID, ERROR_IMAGE_REQUIRED } from "../constant/errors";
+import { ERROR_EMAIL_INVALID } from "../constant/errors";
 import { formDetailSearchQuery } from "../utils/data";
 import { MemberInfo } from "../utils/interface";
 
-
-type searchParams = {
-  day: string,
-  month: string,
-  mobile: string,
-}
 
 export default function Update(): JSX.Element {
   const { addAlert } = useAlert();
@@ -104,7 +98,7 @@ export default function Update(): JSX.Element {
         return; // Stop execution
     }
     const id = formDetail?._id
-    const { rank, fullname, homeaddress, gender, email, day, month } = newBody;
+    const { rank, fullname, homeaddress, email, day, month } = newBody;
     
     if(id) {
       if(imageAsset?._id) {
