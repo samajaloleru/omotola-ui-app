@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import logo from "../assets/images/logo.png";
+import omotolaLogo from "../assets/images/omotola_logo.png";
 import Button from "../components/reuseables/button";
 import Create from "../components/create";
 import Update from "../components/update";
@@ -14,6 +15,9 @@ export default function Home(): JSX.Element {
           <div className="flex flex-row items-center justify-between w-full">
             <div className="fr-ns right-0-ns">
               <img className="h-20" src={logo} alt="Logo" />
+            </div>
+            <div className="fr-ns right-0-ns">
+              <img className="h-28" src={omotolaLogo} alt="Logo" />
             </div>
           </div>
           {viewMode === 'home' &&
