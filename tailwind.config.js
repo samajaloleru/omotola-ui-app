@@ -5,7 +5,7 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      akshar: ["Akshar", "sans-serif"],
+      apercu: ["Apercu", "sans-serif"],
     },
     extend: {},
     colors: {
