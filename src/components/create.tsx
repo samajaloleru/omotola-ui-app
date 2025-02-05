@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
 import Spinner from "../components/reuseables/spinner"; // Import your spinner component
-import InputField from "../components/reuseables/input";
+import InputField from "./reuseables/Input/input";
 import SelectField from "../components/reuseables/select";
 import { daysList, errorMessageMap, ErrorTypes, femaleRankList, genderList, maleRankList, monthsList, SUCCESSFULLY_SUBMITTED } from "../constant";
 import { client } from "../utils/client";
-import Button from "../components/reuseables/button";
+import Button from "./reuseables/Button/button";
 import { useAlert } from "../utils/notification/alertcontext";
 import { validateEmail } from "../utils/common";
 import { ERROR_EMAIL_INVALID, ERROR_IMAGE_REQUIRED } from "../constant/errors";

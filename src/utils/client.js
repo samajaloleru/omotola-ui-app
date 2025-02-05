@@ -8,6 +8,7 @@ export const client = createClient({
     useCdn: true, // set to `false` to bypass the edge cache
     apiVersion: '2023-06-15',
     token: config.sanity.token,
+    ignoreBrowserTokenWarning: true
 })
 
 const builder = imageUrlBuilder(client);

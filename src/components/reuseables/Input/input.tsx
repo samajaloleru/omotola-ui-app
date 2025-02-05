@@ -9,7 +9,7 @@ interface InputProps {
 }
 
 const InputField = forwardRef<HTMLInputElement, InputProps>(
-  ({ title, type, iconName, placeholder, readonly }, ref) => {
+  ({ title, type, iconName, placeholder, readonly = false }, ref) => {
     return (
       <div className="flex flex-col gap-1 w-full">
         {title && <div className="font-medium tracking-wide">{title}</div>}
@@ -22,7 +22,7 @@ const InputField = forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             placeholder={placeholder}
-            readOnly= {readonly || false}
+            readOnly= {readonly}
             ref={ref} // Attach the ref here
             className="outline-none border-l px-2 bg-transparent text-primary border-primary w-full"
           />

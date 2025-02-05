@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import logo from "../assets/images/logo.png";
 import omotolaLogo from "../assets/images/omotola_logo.png";
-import Button from "../components/reuseables/button";
+import Button from "../components/reuseables/Button/button";
 import Create from "../components/create";
 import Update from "../components/update";
 
