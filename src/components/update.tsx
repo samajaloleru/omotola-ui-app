@@ -255,7 +255,7 @@ export default function Update(): JSX.Element {
       {!formDetail &&
         <div className="flex flex-col gap-5 items-center lg:w-2/3 w-full mb-10">
           <div className="flex w-full font-extrabold tracking-wide text-yellow text-[2rem] capitalize">
-            Verfiy Your Details
+            Verify Your Details
           </div>
           <div className="flex flex-col w-full oswald-font">Please fill the form below to verify your account</div>
           <div className="flex flex-col w-full gap-1">
