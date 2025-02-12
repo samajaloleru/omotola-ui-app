@@ -363,7 +363,7 @@ export default function Update(): JSX.Element {
             placeholder="Enter your full name"
             ref={fullNameRef}
           />
-          <div className="grid grid-cols-2 w-full gap-3">
+          <div className="grid lg:grid-cols-2 w-full gap-3">
             <InputField
               type="email"
               title="Email Address"
@@ -392,8 +392,8 @@ export default function Update(): JSX.Element {
               Date of Birth
             </div>
             <div className="flex flex-row w-full gap-3">
-              <SelectField className="w-1/3" iconName="fi-sr-calendar-clock" title="Day" value={selectedDay} recordList={daysList} onChangeText={(value) => setSelectedDay(value)} placeholder="Day" />
-              <SelectField className="w-2/3" iconName="fi-sr-calendar-clock" title="Month" value={selectedMonth} recordList={monthsList} onChangeText={(value) => setSelectedMonth(value)} placeholder="Month" />
+              <SelectField className="lg:w-1/3 w-1/2" iconName="fi-sr-calendar-clock" title="Day" value={selectedDay} recordList={daysList} onChangeText={(value) => setSelectedDay(value)} placeholder="Day" />
+              <SelectField className="lg:w-2/3 w-1/2" iconName="fi-sr-calendar-clock" title="Month" value={selectedMonth} recordList={monthsList} onChangeText={(value) => setSelectedMonth(value)} placeholder="Month" />
             </div>
           </div>
             
