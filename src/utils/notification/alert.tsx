@@ -5,13 +5,13 @@ const Alert: React.FC = () => {
   const { alerts, clearAlert } = useAlert();
 
   return (
-    <div className="absolute flex flex-col z-50 top-[3rem] items-end w-screen">
+    <div className="absolute flex flex-col gap-3 z-50 top-[3rem] right-5 items-end w-screen">
       {alerts.map((alert) => (
         <div
           key={alert.id}
-          className={`mt-3 mx-4 px-4 rounded-md border-l-[.6rem] ${
+          className={`px-4 rounded-md border-l-[.6rem] ${
             alert.type === 'success' ? 'border-green' : 'border-red'
-          } bg-white md:max-w-2xl md:px-8 text-[12px] w-[20rem]`}
+          } bg-white max-w-2xl md:px-8 text-[12px] md:w-[20rem]`}
         >
           <div className="flex justify-between py-3">
             <div className="flex">

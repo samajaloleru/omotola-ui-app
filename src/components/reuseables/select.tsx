@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-interface InputProps {
+interface SelectProps {
   name?: string;
   iconName?: string;
   value?: string | null;
@@ -13,7 +13,7 @@ interface InputProps {
   onChangeText?: (value: string) => void;
 }
 
-const SelectField: React.FC<InputProps> = ({
+const SelectField: React.FC<SelectProps> = ({
   recordList = [],
   onChangeText,
   placeholder,
@@ -45,7 +45,7 @@ const SelectField: React.FC<InputProps> = ({
 
       {/* Dropdown Menu */}
       {show && !disabled && (
-        <div className="flex flex-col gap-1 bg-white border-2 border-secondary w-full max-h-[9rem] overflow-auto absolute bottom-[4rem] z-10">
+        <div className="flex flex-col gap-1 bg-white border-2 border-secondary w-full max-h-[9rem] overflow-auto absolute bottom-[3.4rem] z-10">
           {recordList && recordList.length === 0 ? (
             <div className="text-center text-gray-500 py-2">No options</div>
           ) : (
