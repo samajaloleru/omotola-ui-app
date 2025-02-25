@@ -10,7 +10,7 @@ import Button from "./reuseables/Button/button";
 import { useAlert } from "../utils/notification/alertcontext";
 import { validateEmail } from "../utils/common";
 import { ERROR_EMAIL_INVALID, ERROR_IMAGE_REQUIRED } from "../constant/errors";
-import { formDetailSearchQuery } from "../utils/data";
+import { formDetailSearchQueryByDayMonthAndMobile } from "../utils/data";
 import { MemberInfo } from "../utils/interface";
 import Modal from "./reuseables/Modal/modal";
 
@@ -216,7 +216,7 @@ export default function Update(): JSX.Element {
     }
 
     try {
-      const query = formDetailSearchQuery(newBody);
+      const query = formDetailSearchQueryByDayMonthAndMobile(newBody);
       await client.fetch(query)
       .then((data) => {
         if (data[0]){

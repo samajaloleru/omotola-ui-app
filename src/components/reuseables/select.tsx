@@ -24,7 +24,7 @@ const SelectField: React.FC<SelectProps> = ({
   className,
 }) => {
   const [show, setShow] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string | null>(null);
+  const [selectedValue, setSelectedValue] = useState<string | null>(value||null);
 
   const handleSelect = (value: string) => {
     if (disabled) return; // Prevent selection if disabled
@@ -36,7 +36,7 @@ const SelectField: React.FC<SelectProps> = ({
   };
 
   useEffect(() => {
-    if (value) setSelectedValue(value);
+    setSelectedValue(value ?? null)
   }, [value]);
 
   return (
@@ -72,13 +72,13 @@ const SelectField: React.FC<SelectProps> = ({
 
       <div
         onClick={() => !disabled && setShow(!show)}
-        className={`flex flex-row items-center py-3 border-2 w-full cursor-pointer ${
+        className={`flex flex-row items-center py-2 border-2 w-full cursor-pointer ${
           disabled ? "bg-gray-300 border-gray-400 cursor-not-allowed" : "bg-white border-secondary"
         }`}
       >
         {iconName && (
           <i
-            className={`fi ${iconName} text-center px-2 mb-[-.3rem] text-lg border-r ${
+            className={`fi ${iconName} text-center px-2 mb-[-.3rem] text-sm border-r ${
               disabled ? "text-gray-400 border-gray-400" : "text-primary border-primary"
             }`}
           ></i>

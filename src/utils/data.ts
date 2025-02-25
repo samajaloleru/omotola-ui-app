@@ -11,8 +11,41 @@ type verifyParams = {
   mobile: string,
 }
 
-export const formDetailSearchQuery = ({day, month, mobile} : verifyParams ) => {
+export const formDetailSearchQueryByDayMonthAndMobile = ({day, month, mobile} : verifyParams ) => {
   const query = `*[_type == "formDetail" && day == '${day}' && month == '${month}' && mobile == '${mobile}' ]{
+    _id,
+    fullName,
+    "imageUrl": image.asset->url,
+    rank,
+    email,
+    mobile,
+    homeAddress,
+    gender,
+    day,
+    month,
+    _createdAt
+  }`;
+  return query;
+};
+
+export const formDetailSearchQueryByMonth = ( month : string ) => {
+  const query = `*[_type == "formDetail" && month == '${month}']{
+    _id,
+    fullName,
+    "imageUrl": image.asset->url,
+    rank,
+    email,
+    mobile,
+    homeAddress,
+    gender,
+    day,
+    month,
+    _createdAt
+  }`;
+  return query;
+};
+export const fetchFormDetail = ( ) => {
+  const query = `*[_type == "formDetail"]{
     _id,
     fullName,
     "imageUrl": image.asset->url,
