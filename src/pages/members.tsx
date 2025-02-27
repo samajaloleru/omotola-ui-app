@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
 
 import logo from "../assets/images/logo.png";
 import omotolaLogo from "../assets/images/omotola_logo.png";
@@ -10,12 +9,6 @@ import SelectField from "../components/reuseables/select";
 import { monthsList } from "../constant";
 import Spinner from "../components/reuseables/spinner";
 import ViewMember from "../components/reuseables/view-member";
-
-type SearchParams = {
-  day: string,
-  month: string,
-  mobile: string,
-}
 
 const Members: React.FC = () => {
   const [viewAble, setViewAble] = useState<boolean>(false);
@@ -30,43 +23,47 @@ const Members: React.FC = () => {
     setSelectedMember(null);
   };
 
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
     setLoading(true);
     try {
       const data = await client.fetch(fetchFormDetail());
-      if (isEmpty) setIsEmpty(false)
+      const isDataEmpty = data.length === 0;
+      setIsEmpty(isDataEmpty);
+      setMemberlist(data);
       setLoading(false);
-      return setMemberlist(data)
     } catch (error) {
       console.error("Fetch error:", error);
-      return setMemberlist([]);
+      setIsEmpty(true);
+      setMemberlist([]);
+      setLoading(false);
     }
-  };
+  }, []); // Stable dependencies (setters) don't cause re-renders
 
-  const fetchMembersBySearch = async (month: string) => {
+  const fetchMembersBySearch = useCallback(async (month: string) => {
     setLoading(true);
     try {
       const data = await client.fetch(formDetailSearchQueryByMonth(month));
-      setMemberlist(data)
-      setIsEmpty(data.length === 0)
+      const isDataEmpty = data.length === 0;
+      setMemberlist(data);
+      setIsEmpty(isDataEmpty);
       setLoading(false);
-      return 
     } catch (error) {
       console.error("Fetch error:", error);
-      return setMemberlist([]);
+      setMemberlist([]);
+      setIsEmpty(true);
+      setLoading(false);
     }
-  };
-
+  }, []);
 
   useEffect(() => {
-    if (!isEmpty && memberList.length === 0){
-      fetchMembers()
+    if (!isEmpty && memberList.length === 0) {
+      fetchMembers();
     }
-  }, [memberList, isEmpty]);
+  }, [memberList, isEmpty, fetchMembers]); // Include fetchMembers in dependencies
 
   return (
     <div className="flex flex-col justify-center items-center w-11/12 h-full lg:p-10 text-primary  rounded-xl">
-      {selectedMember && <ViewMember member={selectedMember} closeModal={(value) => handleCloseModal(value)} />}
+      {viewAble && selectedMember && <ViewMember member={selectedMember} closeModal={(value) => handleCloseModal(value)} />}
       <div className="flex flex-col items-center lg:w-3/5 w-full lg:p-10 gap-5">
         <div className="flex flex-row items-center justify-between w-full">
           <div className="fr-ns right-0-ns">
@@ -81,8 +78,8 @@ const Members: React.FC = () => {
             <div className="flex font-extrabold tracking-wide text-yellow lg:text-[2rem] text-2xl capitalize">
               Members List : <span className="bg-light-green px-3 ml-6">{memberList.length}</span>
             </div>
-            {selectedMonth && <span onClick={() => {fetchMembers(); setSelectedMonth(null)}} className="bg-secondary p-3 w-auto cursor-pointer">clear filter</span>}
-            <SelectField className="lg:w-1/3 w-1/2 text-xs p-2" iconName="fi-sr-calendar-clock" title="Filter by Month" value={selectedMonth} recordList={monthsList} onChangeText={(value) => {setSelectedMonth(value); fetchMembersBySearch(value)}} placeholder="Month" />
+            {selectedMonth && <span onClick={() => { fetchMembers(); setSelectedMonth(null) }} className="bg-secondary p-3 w-auto cursor-pointer">clear filter</span>}
+            <SelectField className="lg:w-1/3 w-1/2 text-xs p-2" iconName="fi-sr-calendar-clock" title="Filter by Month" value={selectedMonth} recordList={monthsList} onChangeText={(value) => { setSelectedMonth(value); fetchMembersBySearch(value) }} placeholder="Month" />
           </div>
           <div className="grid grid-cols-4 w-full gap-3 border-b border-primary font-semibold text-lg pb-3">
             <div className="">Rank</div>
@@ -99,13 +96,13 @@ const Members: React.FC = () => {
             </div>}
             {!loading && memberList && memberList.map((member) => (
               <div className="flex flex-col w-full gap-1 border-b border-primary py-3" key={member._id}>
-                <div  className="grid grid-cols-4 w-full gap-3">
+                <div className="grid grid-cols-4 w-full gap-3">
                   <div className="">{member.rank}</div>
                   <div className="col-span-2">{member.fullName}</div>
                   <div className="">{member.day} of {member.month}</div>
                 </div>
                 <div className="w-full flex flex-row justify-end">
-                  <div className="text-xs italic pr-3 cursor-pointer hover:bg-secondary" onClick={() => setSelectedMember(member)}>Click to view</div>
+                  <div className="text-xs italic pr-3 cursor-pointer hover:bg-secondary" onClick={() => { setSelectedMember(member); setViewAble(true); }}>Click to view</div>
                 </div>
               </div>
             ))}
