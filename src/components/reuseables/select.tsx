@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface SelectProps {
   name?: string;
@@ -26,6 +26,37 @@ const SelectField: React.FC<SelectProps> = ({
   const [show, setShow] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string | null>(value||null);
 
+  const componentRef = useRef<HTMLDivElement>(null);
+  const showRef = useRef(show);
+  const disabledRef = useRef(disabled);
+
+  useEffect(() => {
+    showRef.current = show;
+  }, [show]);
+
+  useEffect(() => {
+    disabledRef.current = disabled;
+  }, [disabled]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (disabledRef.current) return;
+      if (
+        componentRef.current &&
+        !componentRef.current.contains(event.target as Node)
+      ) {
+        if (showRef.current) {
+          setShow(false);
+        }
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
   const handleSelect = (value: string) => {
     if (disabled) return; // Prevent selection if disabled
     setSelectedValue(value);
@@ -40,7 +71,7 @@ const SelectField: React.FC<SelectProps> = ({
   }, [value]);
 
   return (
-    <div className={`${className} flex flex-col relative`}>
+    <div ref={componentRef} className={`${className} flex flex-col relative`}>
       {title && <div className="pb-1 text-sm italic tracking-wide">{title}</div>}
 
       {/* Dropdown Menu */}
