@@ -277,7 +277,7 @@ export default function Create(): JSX.Element {
               )}
             </div>
           </div>
-          <div className="grid lg:grid-cols-2 w-full gap-3">
+          <div className={`${selectedGender ? 'lg:grid-cols-2' : ''} grid  w-full gap-3`}>
             <div className="flex flex-col w-full gap-1">
               <div className='font-medium tracking-wide'>
                 Gender
