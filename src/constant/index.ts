@@ -8,6 +8,7 @@ export enum ErrorMessage {
   ERROR_DAY = '⛔ Day of Birth is required',
   ERROR_MONTH = '⛔ Month of Birth is required',
   ERROR_HOMEADDRESS = '⛔ Home Address is required',
+  ERROR_PROFESSION = '⛔ Profession/Occupation is required',
 }
 
 export const SUCCESSFULLY_SUBMITTED = `✅ Form Submitted Successfully`;
@@ -23,6 +24,7 @@ export enum ErrorTypes {
   ERROR_GENDER = 'gender',
   ERROR_FULLNAME = 'fullname',
   ERROR_HOMEADDRESS = 'homeaddress',
+  ERROR_PROFESSION = 'profession',
 }
 
 export const errorMessageMap: Record<ErrorTypes, ErrorMessage> = {
@@ -34,6 +36,7 @@ export const errorMessageMap: Record<ErrorTypes, ErrorMessage> = {
   [ErrorTypes.ERROR_DAY]: ErrorMessage.ERROR_DAY,
   [ErrorTypes.ERROR_MONTH]: ErrorMessage.ERROR_MONTH,
   [ErrorTypes.ERROR_HOMEADDRESS]: ErrorMessage.ERROR_HOMEADDRESS,
+  [ErrorTypes.ERROR_PROFESSION]: ErrorMessage.ERROR_PROFESSION,
 }
 
 export const monthsList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']

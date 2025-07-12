@@ -39,6 +39,7 @@ export default function Create(): JSX.Element {
   const homeAddressRef = useRef<HTMLInputElement>(null);
   const mobileRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
+  const professionRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     return () => {
@@ -81,6 +82,7 @@ export default function Create(): JSX.Element {
       gender: selectedGender || "",
       fullname: fullNameRef.current?.value || "",
       homeaddress: homeAddressRef.current?.value || "",
+      profession: professionRef.current?.value || "",
       mobile: mobileRef.current?.value || "",
       email: emailRef.current?.value || "",
       day: selectedDay || "",
@@ -155,6 +157,7 @@ export default function Create(): JSX.Element {
             mobile: mobileRef.current?.value,
             homeAddress: homeAddressRef.current?.value,
             email: emailRef.current?.value,
+            profession: professionRef.current?.value,
             gender: selectedGender,
             day: selectedDay,
             month: selectedMonth,
@@ -184,6 +187,7 @@ export default function Create(): JSX.Element {
     if (homeAddressRef.current) homeAddressRef.current.value = "";
     if (mobileRef.current) mobileRef.current.value = "";
     if (emailRef.current) emailRef.current.value = "";
+    if (professionRef.current) professionRef.current.value = "";
 
     // Reset state variables
     setImageAsset(null);
@@ -318,6 +322,13 @@ export default function Create(): JSX.Element {
                   ref={mobileRef}
                 />
               </div>
+              <InputField
+                type="text"
+                title="Profession/Occupation"
+                iconName="fi-sr-briefcase"
+                placeholder="Enter your profession/occupation"
+                ref={professionRef}
+              />
               <InputField
                 type="text"
                 title="Home Address"

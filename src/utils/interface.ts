@@ -7,6 +7,7 @@ export interface MemberInfo{
     email: string;
     mobile: string;
     homeAddress: string;
+    profession: string;
     day: string;
     month: string;
     price: number;

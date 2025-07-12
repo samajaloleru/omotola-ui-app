@@ -34,6 +34,11 @@ export default {
             type: 'string', 
         },
         {
+            name: 'profession',
+            title: 'Profession/Occupation',
+            type: 'string', 
+        },
+        {
             name: 'day',
             title: 'Days',
             type: 'string', 

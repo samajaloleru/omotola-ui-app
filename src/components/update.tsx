@@ -35,6 +35,7 @@ export default function Update(): JSX.Element {
   const homeAddressRef = useRef<HTMLInputElement>(null);
   const mobileRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
+  const professionRef = useRef<HTMLInputElement>(null);
 
   const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,6 +70,7 @@ export default function Update(): JSX.Element {
       gender: selectedGender || "",
       fullname: fullNameRef.current?.value || "",
       homeaddress: homeAddressRef.current?.value || "",
+      profession: professionRef.current?.value || "",
       mobile: mobileRef.current?.value || "",
       email: emailRef.current?.value || "",
       day: selectedDay || "",
@@ -120,6 +122,7 @@ export default function Update(): JSX.Element {
         rank: selectedRank,
         fullName: fullNameRef.current?.value,
         homeAddress: homeAddressRef.current?.value,
+        profession: professionRef.current?.value,
         email: emailRef.current?.value?.trim(),
         day: selectedDay,
         month: selectedMonth,
@@ -147,7 +150,7 @@ export default function Update(): JSX.Element {
       );
 
       // Execute update
-      const updatedDoc = await client
+      await client
         .patch(formDetail._id)
         .set(cleanPayload)
         .commit();
@@ -173,6 +176,7 @@ export default function Update(): JSX.Element {
     if (homeAddressRef.current) homeAddressRef.current.value = "";
     if (mobileRef.current) mobileRef.current.value = "";
     if (emailRef.current) emailRef.current.value = "";
+    if (professionRef.current) professionRef.current.value = "";
 
     // Reset state variables
     setImageAsset(null);
@@ -243,6 +247,7 @@ export default function Update(): JSX.Element {
       emailRef.current && (emailRef.current.value = formDetail.email || "");
       mobileRef.current && (mobileRef.current.value = formDetail.mobile || "");
       homeAddressRef.current && (homeAddressRef.current.value = formDetail.homeAddress || "");
+      professionRef.current && (professionRef.current.value = formDetail.profession || "");
       
       if (formDetail.gender) setSelectedGender(formDetail.gender);
       if (formDetail.rank) setSelectedRank(formDetail.rank);
@@ -393,6 +398,13 @@ export default function Update(): JSX.Element {
             ref={mobileRef}
           />
         </div>
+        <InputField
+          type="text"
+          title="Profession/Occupation"
+          iconName="fi-sr-briefcase"
+          placeholder="Enter your profession/occupation"
+          ref={professionRef}
+        />
         <InputField
           type="text"
           title="Home Address"
