@@ -11,7 +11,7 @@ const Alert: React.FC = () => {
           key={alert.id}
           className={`px-4 rounded-md border-l-[.6rem] ${
             alert.type === 'success' ? 'border-green' : 'border-red'
-          } bg-white max-w-2xl md:px-8 text-[12px] md:w-[20rem]`}
+          } bg-white max-w-2xl md:px-8 text-[12px] w-4/5 md:w-[20rem]`}
         >
           <div className="flex justify-between py-3">
             <div className="flex">
