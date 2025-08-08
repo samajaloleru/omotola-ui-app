@@ -11,8 +11,8 @@ type verifyParams = {
   mobile: string,
 }
 
-export const formDetailSearchQueryByDayMonthAndMobile = ({day, month, mobile} : verifyParams ) => {
-  const query = `*[_type == "formDetail" && day == '${day}' && month == '${month}' && mobile == '${mobile}' ]{
+export const memberSearchQueryByDayMonthAndMobile = ({day, month, mobile} : verifyParams ) => {
+  const query = `*[_type == "member" && day == '${day}' && month == '${month}' && mobile == '${mobile}' ]{
     _id,
     fullName,
     "imageUrl": image.asset->url,
@@ -29,8 +29,8 @@ export const formDetailSearchQueryByDayMonthAndMobile = ({day, month, mobile} : 
   return query;
 };
 
-export const formDetailSearchQueryByMonth = ( month : string ) => {
-  const query = `*[_type == "formDetail" && month == '${month}']{
+export const memberSearchQueryByMonth = ( month : string ) => {
+  const query = `*[_type == "member" && month == '${month}']{
     _id,
     fullName,
     "imageUrl": image.asset->url,
@@ -46,8 +46,8 @@ export const formDetailSearchQueryByMonth = ( month : string ) => {
   }`;
   return query;
 };
-export const fetchFormDetail = ( ) => {
-  const query = `*[_type == "formDetail"]{
+export const fetchMember = ( ) => {
+  const query = `*[_type == "member"]{
     _id,
     fullName,
     "imageUrl": image.asset->url,
@@ -61,84 +61,5 @@ export const fetchFormDetail = ( ) => {
     month,
     _createdAt
   }`;
-  return query;
-};
-
-export const professionalListQuery = (type: string) => {  
-  const query = `*[_type == "professional" && typeOf == '${type}' ]{
-    _id,
-    name,
-    title,
-    body,
-    mainImageUrl,
-    typeOf,
-    role,
-    education,
-    experience,
-    _createdAt
-  }`;
-  return query;
-};
-
-export const postDetailQuery = (postId: string) => {
-  const query = `*[_type == "post" && _id == '${postId}']{
-    _id,
-    title,
-    body,
-    duration,
-    _createdAt
-  }`;
-  return query;
-};
-
-export const newsDetailMoreQuery = (id: string) => {
-  if (id) {
-    const query = `*[_type == "post" && _id != '${id}' && status == 'active' ]| order(_createdAt desc) [0...3]{
-      _id,
-      title,
-      subtitle,
-      duration,
-      body
-    }`;
-    return query;
-  } else {
-    const query = `*[_type == "post" && status == 'active' ]| order(_createdAt desc) [0...3]{
-      _id,
-      title,
-      subtitle,
-      duration,
-      body
-    }`;
-    return query;
-  }
-};
-
-
-export const newsQuery = ({page, pageSize}: searchParams) => {  
-  const prev = (page - 1) * pageSize;
-  const next = page * pageSize;
-  
-  const query = `*[_type == "post" && status == 'active'] | order(_createdAt desc) [${prev}...${next}]{
-    _id,
-    title,
-    subtitle,
-    duration,
-    body
-  }`;
-  
-  return query;
-};
-
-export const newSearchQuery = ({page, pageSize, searchTerm}: searchParams) => {
-  const prev = (page - 1) * pageSize;
-  const next = page * pageSize;
-  const query = `*[_type == "post" && status == 'active' && title match '${searchTerm}*'] | order(_createdAt desc) [${prev}...${next}]{
-    _id,
-    title,
-    subtitle,
-    duration,
-    body
-  }`;
-
   return query;
 };

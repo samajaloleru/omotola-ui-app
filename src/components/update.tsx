@@ -10,7 +10,7 @@ import Button from "./reuseables/Button/button";
 import { useAlert } from "../utils/notification/alertcontext";
 import { validateEmail } from "../utils/common";
 import { ERROR_EMAIL_INVALID, ERROR_IMAGE_REQUIRED } from "../constant/errors";
-import { formDetailSearchQueryByDayMonthAndMobile } from "../utils/data";
+import { memberSearchQueryByDayMonthAndMobile } from "../utils/data";
 import { MemberInfo } from "../utils/interface";
 import Modal from "./reuseables/Modal/modal";
 
@@ -19,7 +19,7 @@ export default function Update(): JSX.Element {
   const { addAlert } = useAlert();
   const [modal, setModal] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
-  const [formDetail, setFormDetail] = useState<MemberInfo | null>(null);
+  const [member, setFormDetail] = useState<MemberInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [imageAssetLocal, setImageAssetLocal] = useState<{ url: string} | null>(null); // Define proper type
   const [imageAsset, setImageAsset] = useState<{ url: string, _id: string } | null>(null); // Define proper type
@@ -101,7 +101,7 @@ export default function Update(): JSX.Element {
   const onSubmit = async () => {
     setLoading(true);
     try {
-      if (!formDetail?._id) {
+      if (!member?._id) {
         throw new Error("No document ID found for update");
       }
 
@@ -151,7 +151,7 @@ export default function Update(): JSX.Element {
 
       // Execute update
       await client
-        .patch(formDetail._id)
+        .patch(member._id)
         .set(cleanPayload)
         .commit();
 
@@ -220,7 +220,7 @@ export default function Update(): JSX.Element {
     }
 
     try {
-      const query = formDetailSearchQueryByDayMonthAndMobile(newBody);
+      const query = memberSearchQueryByDayMonthAndMobile(newBody);
       await client.fetch(query)
       .then((data) => {
         if (data[0]){
@@ -242,19 +242,19 @@ export default function Update(): JSX.Element {
   }
 
   useEffect(() => {
-    if (formDetail) {
-      fullNameRef.current && (fullNameRef.current.value = formDetail.fullName || "");
-      emailRef.current && (emailRef.current.value = formDetail.email || "");
-      mobileRef.current && (mobileRef.current.value = formDetail.mobile || "");
-      homeAddressRef.current && (homeAddressRef.current.value = formDetail.homeAddress || "");
-      professionRef.current && (professionRef.current.value = formDetail.profession || "");
+    if (member) {
+      fullNameRef.current && (fullNameRef.current.value = member.fullName || "");
+      emailRef.current && (emailRef.current.value = member.email || "");
+      mobileRef.current && (mobileRef.current.value = member.mobile || "");
+      homeAddressRef.current && (homeAddressRef.current.value = member.homeAddress || "");
+      professionRef.current && (professionRef.current.value = member.profession || "");
       
-      if (formDetail.gender) setSelectedGender(formDetail.gender);
-      if (formDetail.rank) setSelectedRank(formDetail.rank);
-      if (formDetail.day) setSelectedDay(formDetail.day);
-      if (formDetail.month) setSelectedMonth(formDetail.month);
+      if (member.gender) setSelectedGender(member.gender);
+      if (member.rank) setSelectedRank(member.rank);
+      if (member.day) setSelectedDay(member.day);
+      if (member.month) setSelectedMonth(member.month);
     }
-  }, [formDetail]);
+  }, [member]);
   
   useEffect(() => {
     if (selectedGender) {
@@ -269,7 +269,7 @@ export default function Update(): JSX.Element {
   
   return (
     <div className="flex flex-col items-center w-full gap-5">
-      {!formDetail &&
+      {!member &&
         <div className="flex flex-col gap-5 items-center lg:w-2/3 w-full mb-10">
           <div className="flex w-full font-extrabold tracking-wide text-yellow lg:text-[2rem] text-2xl capitalize">
             Verify Your Details
@@ -295,7 +295,7 @@ export default function Update(): JSX.Element {
           <Button title="Verify me" loading={loading} onPress={verifyMember}/>
         </div> 
       }
-      {formDetail && <div className="bg-white flex flex-col gap-2 w-full lg:p-10 p-3 text-primary items-center mb-10 relative">
+      {member && <div className="bg-white flex flex-col gap-2 w-full lg:p-10 p-3 text-primary items-center mb-10 relative">
         {modal && <Modal message="Are you sure you want to proceed" loading={loading} closeModal={(value) => handleCloseModal(value)} onPress={onSubmit}/> }
         <div className="bg-secondary text-primary mb-5 p-3 flex flex-0.7 w-full">
           <div className="flex justify-center items-center flex-col border-2 border-dotted p-3 w-full h-420">
@@ -309,8 +309,8 @@ export default function Update(): JSX.Element {
               <label>
                 <div className="relative">
                   <img
-                    // src={formDetail?.image && urlFor(pinDetail.image).url()}
-                    src={formDetail?.imageUrl}
+                    // src={member?.image && urlFor(pinDetail.image).url()}
+                    src={member?.imageUrl}
                     alt="uploaded-pic"
                     className="w-full"
                   />

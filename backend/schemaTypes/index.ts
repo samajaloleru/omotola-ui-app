@@ -1,4 +1,4 @@
 import user from "./user";
-import formDetail from "./formDetail";
+import member from "./member";
 
-export const schemaTypes = [user, formDetail]
+export const schemaTypes = [user, member]

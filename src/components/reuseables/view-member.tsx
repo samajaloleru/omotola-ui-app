@@ -42,7 +42,7 @@ const ViewMember = ({
                 <div className='flex lg:flex-row flex-col gap-5 w-full items-center text-primary'>
                     <div className='flex flex-col gap-4 items-center'>
                         <img
-                            // src={formDetail?.image && urlFor(pinDetail.image).url()}
+                            // src={member?.image && urlFor(pinDetail.image).url()}
                             src={member?.imageUrl}
                             alt="uploaded-pic"
                             className="aspect-square max-h-[30rem] object-contain"

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import logo from "../assets/images/logo.png";
 import omotolaLogo from "../assets/images/omotola_logo.png";
 import { client } from "../utils/client";
-import { fetchFormDetail, formDetailSearchQueryByMonth } from "../utils/data";
+import { fetchMember, memberSearchQueryByMonth } from "../utils/data";
 import { MemberInfo } from "../utils/interface";
 import SelectField from "../components/reuseables/select";
 import { monthsList } from "../constant";
@@ -26,7 +26,7 @@ const Members: React.FC = () => {
   const fetchMembers = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await client.fetch(fetchFormDetail());
+      const data = await client.fetch(fetchMember());
       const isDataEmpty = data.length === 0;
       setIsEmpty(isDataEmpty);
       setMemberlist(data);
@@ -42,7 +42,7 @@ const Members: React.FC = () => {
   const fetchMembersBySearch = useCallback(async (month: string) => {
     setLoading(true);
     try {
-      const data = await client.fetch(formDetailSearchQueryByMonth(month));
+      const data = await client.fetch(memberSearchQueryByMonth(month));
       const isDataEmpty = data.length === 0;
       setMemberlist(data);
       setIsEmpty(isDataEmpty);
@@ -62,7 +62,7 @@ const Members: React.FC = () => {
   }, [memberList, isEmpty, fetchMembers]); // Include fetchMembers in dependencies
 
   return (
-    <div className="flex flex-col justify-center items-center w-11/12 h-full lg:p-10 text-primary  rounded-xl">
+    <div className="flex flex-col lg:justify-center items-center w-11/12 h-full overflow-auto lg:p-10 text-primary  rounded-xl">
       {viewAble && selectedMember && <ViewMember member={selectedMember} closeModal={(value) => handleCloseModal(value)} />}
       <div className="flex flex-col items-center lg:w-3/5 w-full lg:p-10 gap-5">
         <div className="flex flex-row items-center justify-between w-full">
@@ -74,12 +74,12 @@ const Members: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-col w-full bg-white p-4">
-          <div className="flex flex-row w-full justify-between items-center mb-10">
+          <div className="flex md:flex-row flex-col w-full justify-between md:items-center mb-10">
             <div className="flex font-extrabold tracking-wide text-yellow lg:text-[2rem] text-2xl capitalize">
               Members List : <span className="bg-light-green px-3 ml-6">{memberList.length}</span>
             </div>
             {selectedMonth && <span onClick={() => { fetchMembers(); setSelectedMonth(null) }} className="bg-secondary p-3 w-auto cursor-pointer">clear filter</span>}
-            <SelectField className="lg:w-1/3 w-1/2 text-xs p-2" iconName="fi-sr-calendar-clock" title="Filter by Month" value={selectedMonth} recordList={monthsList} onChangeText={(value) => { setSelectedMonth(value); fetchMembersBySearch(value) }} placeholder="Month" />
+            <SelectField className="lg:w-1/3 w-full text-xs p-2" iconName="fi-sr-calendar-clock" title="Filter by Month" value={selectedMonth} recordList={monthsList} onChangeText={(value) => { setSelectedMonth(value); fetchMembersBySearch(value) }} placeholder="Month" />
           </div>
           <div className="grid grid-cols-4 w-full gap-3 border-b border-primary font-semibold text-lg pb-3">
             <div className="">Rank</div>
@@ -92,7 +92,7 @@ const Members: React.FC = () => {
               <div className="">
                 No records found
               </div>
-              <span onClick={fetchMembers} className="bg-secondary p-3 w-auto cursor-pointer">Reset Filter</span>
+              <span onClick={fetchMembers} className={`${!selectedMonth ? 'hidden' : ''} bg-secondary p-3 w-auto cursor-pointer`}>Reset Filter</span>
             </div>}
             {!loading && memberList && memberList.map((member) => (
               <div className="flex flex-col w-full gap-1 border-b border-primary py-3" key={member._id}>

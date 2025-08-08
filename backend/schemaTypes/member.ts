@@ -1,6 +1,6 @@
 export default {
-    name: 'formDetail',
-    title: 'FormDetail',
+    name: 'member',
+    title: 'Member',
     type: 'document',
     fields: [
         {

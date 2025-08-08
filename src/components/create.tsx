@@ -10,7 +10,7 @@ import Button from "./reuseables/Button/button";
 import { useAlert } from "../utils/notification/alertcontext";
 import { validateEmail } from "../utils/common";
 import { ERROR_EMAIL_INVALID, ERROR_IMAGE_REQUIRED } from "../constant/errors";
-import { formDetailSearchQueryByDayMonthAndMobile } from "../utils/data";
+import { memberSearchQueryByDayMonthAndMobile } from "../utils/data";
 import Modal from "./reuseables/Modal/modal";
 
 type SearchParams = {
@@ -149,7 +149,7 @@ export default function Create(): JSX.Element {
 
       // Create document
       await client.create({
-        _type: "formDetail",
+        _type: "member",
         ...Object.fromEntries(
           Object.entries({
             rank: selectedRank,
@@ -204,7 +204,7 @@ export default function Create(): JSX.Element {
 
   const fetchMembersBySearch = async (params: SearchParams): Promise<boolean> => {
     try {
-      const data = await client.fetch(formDetailSearchQueryByDayMonthAndMobile(params));
+      const data = await client.fetch(memberSearchQueryByDayMonthAndMobile(params));
       return data?.length > 0;
     } catch (error) {
       console.error("Fetch error:", error);
