@@ -30,7 +30,7 @@ export const memberSearchQueryByDayMonthAndMobile = ({day, month, mobile} : veri
 };
 
 export const memberSearchQueryByMonth = ( month : string ) => {
-  const query = `*[_type == "member" && month == '${month}']{
+  const query = `*[_type == "member" && month == '${month}'] | order(_createdAt desc){
     _id,
     fullName,
     "imageUrl": image.asset->url,
@@ -47,7 +47,7 @@ export const memberSearchQueryByMonth = ( month : string ) => {
   return query;
 };
 export const fetchMember = ( ) => {
-  const query = `*[_type == "member"]{
+  const query = `*[_type == "member"] | order(_createdAt desc){
     _id,
     fullName,
     "imageUrl": image.asset->url,
