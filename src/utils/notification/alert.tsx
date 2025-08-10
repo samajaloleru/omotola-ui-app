@@ -5,7 +5,7 @@ const Alert: React.FC = () => {
   const { alerts, clearAlert } = useAlert();
 
   return (
-    <div className="absolute flex flex-col gap-3 z-50 top-[5rem] right-5 items-end w-screen">
+    <div className="absolute flex flex-col gap-3 z-50 bottom-[5rem] right-5 items-end w-screen">
       {alerts.map((alert) => (
         <div
           key={alert.id}
