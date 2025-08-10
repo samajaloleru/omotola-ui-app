@@ -58,7 +58,7 @@ export default function Create(): JSX.Element {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (["image/png", "image/jpg", "image/jpeg"].includes(file.type)) {
+    if (["image/png", "image/jpg", "image/jpeg", "image/svg+xml", "image/gif"].includes(file.type)) {
       setWrongImageType(false);
       setImageLoading(true);
       const previewURL = URL.createObjectURL(file);
@@ -257,9 +257,10 @@ export default function Create(): JSX.Element {
                   </div>
                   <input
                     type="file"
+                    accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/gif"
                     name="upload-image"
                     onChange={uploadImage}
-                    className="w-0 h-0"
+                    className="hidden"
                   />
                 </label>
               )}
