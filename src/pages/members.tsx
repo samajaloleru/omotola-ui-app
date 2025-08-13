@@ -134,7 +134,7 @@ const Members: React.FC = () => {
         <ViewMember member={selectedMember} closeModal={(value) => handleCloseModal(value)} />
       )}
       
-      <div className="flex flex-col items-center w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="flex flex-col items-center w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-visible md:overflow-hidden">
         {/* Header Section */}
         <div className="w-full bg-gradient-to-l from-primary to-[#e67238] p-4 flex flex-wrap justify-around md:justify-between items-center">
           <div className="flex items-center space-x-4">
@@ -160,7 +160,7 @@ const Members: React.FC = () => {
             
             <button 
               onClick={clearFilters}
-              className="flex items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
+              className="md:flex hidden items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
             >
               <FiX className="mr-1" /> Clear Filters
             </button>
@@ -192,6 +192,13 @@ const Members: React.FC = () => {
               onChangeText={(value) => handleFilterChange('month', value)}
               placeholder="Filter by Month"
             />
+
+            <button 
+              onClick={clearFilters}
+              className="flex md:hidden items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
+            >
+              <FiX className="mr-1" /> Clear Filters
+            </button>
           </div>
         </div>
 
@@ -204,7 +211,7 @@ const Members: React.FC = () => {
             <div className=" text-center">Actions</div>
           </div>
           
-          <div className="h-[250px] md:h-[320px] overflow-auto w-full">
+          <div className="h-auto md:h-[320px] overflow-auto w-full">
             {loading && (
               <div className="w-full py-10 flex justify-center">
                 <Spinner />
@@ -248,7 +255,6 @@ const Members: React.FC = () => {
         {/* Pagination */}
         <Pagination 
           currentPage={searchParams.page} 
-          dataLength={memberList.length} 
           pageSize={searchParams.pageSize} 
           totalPages={totalPage} 
           onPageSizeChange={onPageSizeChange} 

@@ -4,7 +4,6 @@ import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronsLeft, FiChevron
 type PaginationData = {
   currentPage: number;
   pageSize: number;
-  dataLength: number;
   totalPages: number;
   totalItems: number; // Add this
   onPageChange: (newValue: number) => void;
@@ -15,7 +14,6 @@ const Pagination = ({
   currentPage, 
   totalPages,
   totalItems,
-  dataLength, 
   pageSize, 
   onPageChange, 
   onPageSizeChange 
@@ -30,10 +28,10 @@ const Pagination = ({
   // Calculate start and end index for showing entries
   useEffect(() => {
     const start = (currentPage - 1) * pageSize + 1;
-    const end = Math.min(currentPage * pageSize, dataLength);
+    const end = Math.min(currentPage * pageSize, totalItems);
     setStartIndex(start);
     setEndIndex(end);
-  }, [currentPage, pageSize, dataLength]);
+  }, [currentPage, pageSize, totalItems]);
 
   // Generate page numbers with smart truncation
   useEffect(() => {
@@ -80,7 +78,7 @@ const Pagination = ({
     <div className="flex flex-col md:flex-row items-center justify-between w-full rounded-b-xl p-4 bg-primary text-white shadow-sm border border-gray-200 z-40">
       {/* Entries info and page size selector */}
       <div className="flex items-center mb-4 md:mb-0">
-        <div className="text-sm text-gray-600 mr-4">
+        <div className="text-xs md:text-sm text-gray-600 mr-4">
           Showing <span className="font-medium">{startIndex}</span> to{' '}
           <span className="font-medium">{endIndex}</span> of{' '}
           <span className="font-medium">{totalItems}</span> entries
@@ -88,7 +86,7 @@ const Pagination = ({
         
         <div className="relative">
           <div 
-            className="flex items-center justify-between w-24 px-3 py-2 text-sm border border-gray-300 rounded-md cursor-pointer hover:border-gray-400"
+            className="flex items-center justify-between w-24 px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-md cursor-pointer hover:border-gray-400"
             onClick={() => setIsDropdown(!isDropdown)}
           >
             <span>{pageSize}</span>
@@ -100,7 +98,7 @@ const Pagination = ({
               {pageSizes.map(size => (
                 <div 
                   key={size}
-                  className={`px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer ${
+                  className={`px-4 py-2 text-xs md:text-sm hover:bg-gray-100 cursor-pointer ${
                     pageSize === size ? 'bg-blue-50 text-blue-600 font-medium' : ''
                   }`}
                   onClick={() => handlePageSizeChange(size)}
@@ -144,7 +142,7 @@ const Pagination = ({
         {pages.map((page, index) => (
           <button
             key={index}
-            className={`w-10 h-10 flex items-center justify-center rounded-md text-sm ${
+            className={`w-5 md:w-10 h-6 md:h-10 flex items-center justify-center rounded-md text-xs md:text-sm ${
               page === currentPage
                 ? 'bg-gradient-to-r from-primary to-[#e67238] text-white font-medium'
                 : page === -1
