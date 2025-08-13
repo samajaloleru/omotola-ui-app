@@ -1,35 +1,57 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { FiX, FiFilter, FiUser, FiRefreshCw, FiSearch } from "react-icons/fi";
 
 import logo from "../assets/images/logo.png";
 import omotolaLogo from "../assets/images/omotola_logo.png";
 import { client } from "../utils/client";
-import { fetchMember, memberSearchQueryByMonth } from "../utils/data";
+import { fetchMember } from "../utils/data";
 import { MemberInfo } from "../utils/interface";
 import SelectField from "../components/reuseables/select";
-import { monthsList } from "../constant";
+import { monthsList, genderOptions } from "../constant";
 import Spinner from "../components/reuseables/spinner";
 import ViewMember from "../components/reuseables/view-member";
+import Pagination from "../components/reuseables/pagination";
+import InputField from "../components/reuseables/Input/input";
 
 const Members: React.FC = () => {
   const [viewAble, setViewAble] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isEmpty, setIsEmpty] = useState<boolean>(false);
-  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
-  const [memberList, setMemberlist] = useState<MemberInfo[]>([] as MemberInfo[]);
+  const [totalMember, setTotalMember] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+  
+  const [searchParams, setSearchParams] = useState({
+    page: 1,
+    pageSize: 10,
+    month: '',
+    gender: '',
+    name: ''
+  });
+  
+  const [tempName, setTempName] = useState(''); // Temporary name for debounce
+  const [memberList, setMemberlist] = useState<MemberInfo[]>([]);
   const [selectedMember, setSelectedMember] = useState<MemberInfo | null>(null);
+  
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleCloseModal = (value: boolean) => {
     setViewAble(value);
     setSelectedMember(null);
   };
 
-  const fetchMembers = useCallback(async () => {
+  // Consolidated fetch function
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await client.fetch(fetchMember());
-      const isDataEmpty = data.length === 0;
-      setIsEmpty(isDataEmpty);
+      const [data, count] = await Promise.all([
+        client.fetch(fetchMember(searchParams)),
+        client.fetch(`count(*[_type == "member" ${buildFilterQuery()}])`)
+      ]);
+      
+      setIsEmpty(data.length === 0);
       setMemberlist(data);
+      setTotalMember(count);
+      setTotalPage(Math.ceil(count / searchParams.pageSize));
       setLoading(false);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -37,77 +59,202 @@ const Members: React.FC = () => {
       setMemberlist([]);
       setLoading(false);
     }
-  }, []); // Stable dependencies (setters) don't cause re-renders
+  }, [searchParams]);
 
-  const fetchMembersBySearch = useCallback(async (month: string) => {
-    setLoading(true);
-    try {
-      const data = await client.fetch(memberSearchQueryByMonth(month));
-      const isDataEmpty = data.length === 0;
-      setMemberlist(data);
-      setIsEmpty(isDataEmpty);
-      setLoading(false);
-    } catch (error) {
-      console.error("Fetch error:", error);
-      setMemberlist([]);
-      setIsEmpty(true);
-      setLoading(false);
+  // Build filter query based on searchParams
+  const buildFilterQuery = () => {
+    const filters = [];
+    if (searchParams.month) filters.push(`month == "${searchParams.month}"`);
+    if (searchParams.gender) filters.push(`gender == "${searchParams.gender}"`);
+    if (searchParams.name) filters.push(`fullName match "${searchParams.name}*"`);
+    
+    return filters.length > 0 ? `&& (${filters.join(' && ')})` : '';
+  };
+
+  // Fetch data whenever searchParams change
+  useEffect(() => {
+    fetchData();
+  }, [searchParams, fetchData]);
+
+  // Handler for pagination
+  const onPageChange = (page: number) => {
+    setSearchParams(prev => ({ ...prev, page }));
+  }
+
+  // Handler for page size change
+  const onPageSizeChange = (pageSize: number) => {
+    setSearchParams(prev => ({ ...prev, pageSize, page: 1 }));
+  }
+
+  // Handler for filter changes
+  const handleFilterChange = (field: string, value: string) => {
+    setSearchParams(prev => ({ ...prev, [field]: value, page: 1 }));
+  }
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchParams({
+      page: 1,
+      pageSize: 10,
+      month: '',
+      gender: '',
+      name: ''
+    });
+    setTempName('');
+  }
+
+  // Debounced name search handler
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTempName(value);
+    
+    // Clear existing timeout
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
     }
+    
+    // Set new timeout
+    debounceTimeout.current = setTimeout(() => {
+      handleFilterChange('name', value);
+    }, 500); // 500ms debounce
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
   }, []);
 
-  useEffect(() => {
-    if (!isEmpty && memberList.length === 0) {
-      fetchMembers();
-    }
-  }, [memberList, isEmpty, fetchMembers]); // Include fetchMembers in dependencies
-
   return (
-    <div className="flex flex-col lg:justify-center items-center w-11/12 h-full overflow-auto lg:p-10 text-primary  rounded-xl">
-      {viewAble && selectedMember && <ViewMember member={selectedMember} closeModal={(value) => handleCloseModal(value)} />}
-      <div className="flex flex-col items-center lg:w-3/5 w-full lg:p-10 gap-5">
-        <div className="flex flex-row items-center justify-between w-full">
-          <div className="fr-ns right-0-ns">
-            <img className="h-20" src={logo} alt="Logo" />
+    <div className="flex flex-col items-center w-full h-full overflow-auto p-4 md:p-8 text-primary">
+      {viewAble && selectedMember && (
+        <ViewMember member={selectedMember} closeModal={(value) => handleCloseModal(value)} />
+      )}
+      
+      <div className="flex flex-col items-center w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-hidden">
+        {/* Header Section */}
+        <div className="w-full bg-gradient-to-l from-primary to-[#e67238] p-4 flex flex-wrap justify-around md:justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <img className="h-12 md:h-16" src={logo} alt="Logo" />
+            <h1 className="text-xl md:text-2xl font-bold text-white">Members Directory</h1>
           </div>
-          <div className="fr-ns right-0-ns">
-            <img className="h-28" src={omotolaLogo} alt="Logo" />
+          <div className="flex items-center mb-4 md:mb-0">
+            <FiUser className="text-white mr-2" />
+            <h2 className="text-lg font-semibold mr-2">
+              {/* Total Members:  */}
+              <span className="ml-2 bg-primary text-white px-3 py-1 rounded-full">
+                {totalMember}
+              </span>
+            </h2>
+            <img className="h-16 md:h-20" src={omotolaLogo} alt="Omotola Logo" />
           </div>
         </div>
-        <div className="flex flex-col w-full bg-white p-4">
-          <div className="flex md:flex-row flex-col w-full justify-between md:items-center mb-10">
-            <div className="flex font-extrabold tracking-wide text-yellow lg:text-[2rem] text-2xl capitalize">
-              Members List : <span className="bg-light-green px-3 ml-6">{memberList.length}</span>
-            </div>
-            {selectedMonth && <span onClick={() => { fetchMembers(); setSelectedMonth(null) }} className="bg-secondary p-3 w-auto cursor-pointer">clear filter</span>}
-            <SelectField className="lg:w-1/3 w-full text-xs p-2" iconName="fi-sr-calendar-clock" title="Filter by Month" value={selectedMonth} recordList={monthsList} onChangeText={(value) => { setSelectedMonth(value); fetchMembersBySearch(value) }} placeholder="Month" />
+
+        {/* Control Panel */}
+        <div className="w-full p-4 bg-gray-50 border-b flex flex-col">
+          <div className="flex md:flex-row flex-col justify-between items-center mb-4">
+            
+            
+            <button 
+              onClick={clearFilters}
+              className="flex items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
+            >
+              <FiX className="mr-1" /> Clear Filters
+            </button>
           </div>
-          <div className="grid grid-cols-4 w-full gap-3 border-b border-primary font-semibold text-lg pb-3">
-            <div className="">Rank</div>
-            <div className="col-span-2">FullName</div>
-            <div className="">Date of Birth</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {/* Name Search - Fixed to use tempName */}
+            <InputField
+              type="text"
+              iconName="fi-sr-search"
+              placeholder="Search by name..."
+              value={tempName}
+              onChange={handleNameChange}
+            />
+            
+            {/* Gender Filter */}
+            <SelectField 
+              iconName="fi-sr-venus-double"
+              value={searchParams.gender}
+              recordList={genderOptions}
+              onChangeText={(value) => handleFilterChange('gender', value)}
+              placeholder="Filter by Gender"
+            />
+            
+            {/* Month Filter */}
+            <SelectField 
+              iconName="fi-sr-calendar"
+              value={searchParams.month}
+              recordList={monthsList}
+              onChangeText={(value) => handleFilterChange('month', value)}
+              placeholder="Filter by Month"
+            />
           </div>
-          <div className="max-h-[20rem] w-full overflow-auto">
-            {loading && <Spinner />}
-            {!loading && isEmpty && <div className="w-full flex flex-col gap-5 py-10 text-center">
-              <div className="">
-                No records found
+        </div>
+
+        {/* Members Table */}
+        <div className="w-full text-sm">
+          <div className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 bg-gray-100 border-b font-semibold text-primary">
+            <div className="md:col-span-3 hidden md:block">Rank</div>
+            <div className="col-span-2 md:col-span-6">Full Name</div>
+            <div className="col-span-2 hidden md:block">Date of Birth</div>
+            <div className=" text-center">Actions</div>
+          </div>
+          
+          <div className="h-[250px] md:h-[320px] overflow-auto w-full">
+            {loading && (
+              <div className="w-full py-10 flex justify-center">
+                <Spinner />
               </div>
-              <span onClick={fetchMembers} className={`${!selectedMonth ? 'hidden' : ''} bg-secondary p-3 w-auto cursor-pointer`}>Reset Filter</span>
-            </div>}
-            {!loading && memberList && memberList.map((member) => (
-              <div className="flex flex-col w-full gap-1 border-b border-primary py-3" key={member._id}>
-                <div className="grid grid-cols-4 w-full gap-3">
-                  <div className="">{member.rank}</div>
-                  <div className="col-span-2">{member.fullName}</div>
-                  <div className="">{member.day} of {member.month}</div>
-                </div>
-                <div className="w-full flex flex-row justify-end">
-                  <div className="text-xs italic pr-3 cursor-pointer hover:bg-secondary" onClick={() => { setSelectedMember(member); setViewAble(true); }}>Click to view</div>
+            )}
+            
+            {!loading && isEmpty && (
+              <div className="w-full flex flex-col items-center py-10 text-center">
+                <FiFilter className="text-4xl text-gray-400 mb-3" />
+                <div className="text-gray-500 mb-4">No records found</div>
+                <button 
+                  onClick={clearFilters}
+                  className="flex items-center bg-[#2e3c61] text-white px-4 py-2 rounded-lg hover:bg-[#1e2a48] transition"
+                >
+                  <FiRefreshCw className="mr-2" /> Reset Filters
+                </button>
+              </div>
+            )}
+            
+            {!loading && memberList.map((member) => (
+              <div 
+                key={member._id}
+                className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 border-b hover:bg-gray-50 transition-colors"
+              >
+                <div className="md:col-span-3 font-medium hidden md:block">{member.rank}</div>
+                <div className="col-span-2 md:col-span-6 truncate"><div className="block md:hidden font-semibold">{member.rank}</div>{member.fullName}</div>
+                <div className="col-span-2 text-gray-600 hidden md:block">{member.day} of {member.month}</div>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => { setSelectedMember(member); setViewAble(true); }}
+                    className="text-sm bg-[#e67238] hover:bg-[#d16228] text-white px-3 py-1 rounded-lg transition"
+                  >
+                    View
+                  </button>
                 </div>
               </div>
             ))}
           </div>
+          
         </div>
+        {/* Pagination */}
+        <Pagination 
+          currentPage={searchParams.page} 
+          dataLength={memberList.length} 
+          pageSize={searchParams.pageSize} 
+          totalPages={totalPage} 
+          onPageSizeChange={onPageSizeChange} 
+          onPageChange={onPageChange}
+          totalItems={totalMember}
+        />
       </div>
     </div>
   );

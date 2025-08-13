@@ -4,7 +4,7 @@ import { MdDelete } from "react-icons/md";
 import Spinner from "../components/reuseables/spinner"; // Import your spinner component
 import InputField from "./reuseables/Input/input";
 import SelectField from "../components/reuseables/select";
-import { daysList, errorMessageMap, ErrorTypes, femaleRankList, genderList, maleRankList, monthsList, SUCCESSFULLY_UPDATED } from "../constant";
+import { daysList, errorMessageMap, ErrorTypes, femaleRankList, genderOptions, maleRankList, monthsList, SUCCESSFULLY_UPDATED } from "../constant";
 import { client } from "../utils/client";
 import Button from "./reuseables/Button/button";
 import { useAlert } from "../utils/notification/alertcontext";
@@ -365,7 +365,7 @@ export default function Update(): JSX.Element {
             <div className='font-medium tracking-wide'>
               Gender
             </div>
-            <SelectField iconName="fi-sr-venus-double" disabled={true} recordList={genderList} value={selectedGender} onChangeText={(value) => setSelectedGender(value)} placeholder="Select Gender" />
+            <SelectField iconName="fi-sr-venus-double" disabled={true} recordList={genderOptions} value={selectedGender} onChangeText={(value) => setSelectedGender(value)} placeholder="Select Gender" />
           </div>
           <div className="flex flex-col w-full gap-1">
             <div className='font-medium tracking-wide'>

@@ -29,37 +29,35 @@ export const memberSearchQueryByDayMonthAndMobile = ({day, month, mobile} : veri
   return query;
 };
 
-export const memberSearchQueryByMonth = ( month : string ) => {
-  const query = `*[_type == "member" && month == '${month}'] | order(_createdAt desc){
+
+export const fetchMember = (searchParams: any) => {
+  const { page, pageSize, month, gender, name } = searchParams;
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize - 1;
+  
+  let query = `*[_type == "member"`;
+  
+  // Add filters
+  const conditions = [];
+  if (month) conditions.push(`month == "${month}"`);
+  if (gender) conditions.push(`gender == "${gender}"`);
+  if (name) conditions.push(`fullName match "${name}*"`);
+  
+  if (conditions.length) query += ` && (${conditions.join(' && ')})`;
+  
+  query += `] | order(_createdAt desc) [${start}..${end}] {
     _id,
     fullName,
-    "imageUrl": image.asset->url,
     rank,
+    "imageUrl": image.asset->url,
     email,
     mobile,
+    gender,
     homeAddress,
     profession,
-    gender,
     day,
-    month,
-    _createdAt
+    month
   }`;
-  return query;
-};
-export const fetchMember = ( ) => {
-  const query = `*[_type == "member"] | order(_createdAt desc){
-    _id,
-    fullName,
-    "imageUrl": image.asset->url,
-    rank,
-    email,
-    mobile,
-    homeAddress,
-    profession,
-    gender,
-    day,
-    month,
-    _createdAt
-  }`;
+  
   return query;
 };
