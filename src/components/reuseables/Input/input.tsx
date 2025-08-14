@@ -14,7 +14,7 @@ interface InputProps {
 const InputField = forwardRef<HTMLInputElement, InputProps>(
   ({ title, type, iconName, placeholder, readonly = false, isRequired = false, value, onChange }, ref) => {
     return (
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-2 w-full text-sm">
         {title && <div className="font-semibold tracking-wide text-sm">{title} {isRequired && <span className="font-bold text-sm text-red-600">*</span>} </div>}
         <div className="flex flex-row items-center py-2 bg-white border-2 border-secondary w-full">
           {iconName && (

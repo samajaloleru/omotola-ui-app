@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { FiX, FiFilter, FiUser, FiRefreshCw, FiSearch } from "react-icons/fi";
+import { FiX, FiFilter, FiUser, FiRefreshCw } from "react-icons/fi";
 
 import logo from "../assets/images/logo.png";
 import omotolaLogo from "../assets/images/omotola_logo.png";
@@ -155,17 +155,7 @@ const Members: React.FC = () => {
 
         {/* Control Panel */}
         <div className="w-full p-4 bg-gray-50 border-b flex flex-col">
-          <div className="flex md:flex-row flex-col justify-between items-center mb-4">
-            
-            
-            <button 
-              onClick={clearFilters}
-              className="md:flex hidden items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
-            >
-              <FiX className="mr-1" /> Clear Filters
-            </button>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Name Search - Fixed to use tempName */}
             <InputField
               type="text"
@@ -195,7 +185,7 @@ const Members: React.FC = () => {
 
             <button 
               onClick={clearFilters}
-              className="flex md:hidden items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
+              className="flex items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
             >
               <FiX className="mr-1" /> Clear Filters
             </button>
@@ -204,7 +194,7 @@ const Members: React.FC = () => {
 
         {/* Members Table */}
         <div className="w-full text-sm">
-          <div className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 bg-gray-100 border-b font-semibold text-primary">
+          <div className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 px-4 bg-gray-100 border-b font-semibold text-primary">
             <div className="md:col-span-3 hidden md:block">Rank</div>
             <div className="col-span-2 md:col-span-6">Full Name</div>
             <div className="col-span-2 hidden md:block">Date of Birth</div>
@@ -234,7 +224,7 @@ const Members: React.FC = () => {
             {!loading && memberList.map((member) => (
               <div 
                 key={member._id}
-                className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 border-b hover:bg-gray-50 transition-colors"
+                className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 px-4 border-b hover:bg-gray-50 transition-colors"
               >
                 <div className="md:col-span-3 font-medium hidden md:block">{member.rank}</div>
                 <div className="col-span-2 md:col-span-6 truncate"><div className="block md:hidden font-semibold">{member.rank}</div>{member.fullName}</div>
@@ -242,7 +232,7 @@ const Members: React.FC = () => {
                 <div className="flex justify-center">
                   <button
                     onClick={() => { setSelectedMember(member); setViewAble(true); }}
-                    className="text-sm bg-[#e67238] hover:bg-[#d16228] text-white px-3 py-1 rounded-lg transition"
+                    className="text-sm bg-[#e67238] hover:bg-[#d16228] text-white px-2 rounded-lg transition"
                   >
                     View
                   </button>

@@ -71,12 +71,12 @@ const SelectField: React.FC<SelectProps> = ({
   }, [value]);
 
   return (
-    <div ref={componentRef} className={`${className} flex flex-col relative`}>
+    <div ref={componentRef} className={`${className} flex flex-col relative text-sm`}>
       {title && <div className="pb-1 text-sm italic tracking-wide">{title}</div>}
 
       {/* Dropdown Menu */}
       {show && !disabled && (
-        <div className="flex flex-col gap-1 bg-white border-2 border-secondary w-full max-h-[9rem] overflow-auto absolute bottom-[3.4rem] z-10">
+        <div className="flex flex-col gap-1 bg-white border-2 border-secondary w-full max-h-[7rem] overflow-auto absolute bottom-[3.4rem] z-10">
           {recordList && recordList.length === 0 ? (
             <div className="text-center text-gray-500 py-2">No options</div>
           ) : (
