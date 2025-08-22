@@ -135,7 +135,7 @@ const DetailCard = ({ icon, title, value }: { icon: React.ReactNode, title: stri
       <div className="mr-2">{icon}</div>
       <h3 className="text-sm font-semibold text-gray-500">{title}</h3>
     </div>
-    <p className="text-sm font-medium">{value}</p>
+    <p className="text-sm font-medium break-all">{value}</p>
   </div>
 );
 
