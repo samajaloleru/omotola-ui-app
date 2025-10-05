@@ -1,9 +1,8 @@
-
-type searchParams = {
-  page: number,
-  pageSize: number,
-  searchTerm?: string,
-}
+// type searchParams = {
+//   page: number,
+//   pageSize: number,
+//   searchTerm?: string,
+// }
 
 type verifyParams = {
   day: string,

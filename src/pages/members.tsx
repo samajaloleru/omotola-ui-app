@@ -12,11 +12,16 @@ import Spinner from "../components/reuseables/spinner";
 import ViewMember from "../components/reuseables/view-member";
 import Pagination from "../components/reuseables/pagination";
 import InputField from "../components/reuseables/Input/input";
+import { useAlert } from "../utils/notification/alertcontext";
+import { config } from "../utils/config";
 
 const Members: React.FC = () => {
+  const { addAlert } = useAlert();
+  const [isAccessible, setIsAccessible] = useState<boolean>(false);
   const [viewAble, setViewAble] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isEmpty, setIsEmpty] = useState<boolean>(false);
+  const [accessCode, setAccessCode] = useState<string>("");
   const [totalMember, setTotalMember] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
   
@@ -119,6 +124,26 @@ const Members: React.FC = () => {
     }, 500); // 500ms debounce
   };
 
+  const handleAccessCodeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAccessCode(value);
+  };
+  
+  const handleAccessCodeSubmit = () => {
+    if (!accessCode) {
+      addAlert({ message: "Access code cannot be empty", type: "error" });
+      return;
+    }
+    if (accessCode === config.accessCode) {
+      setIsAccessible(true);
+      addAlert({ message: "Access code is valid", type: "success" });
+      return;
+    } else {
+      addAlert({ message: "Invalid access code", type: "error" });
+      return;
+    }
+  };
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -129,129 +154,163 @@ const Members: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center w-full h-full overflow-auto p-4 md:p-8 text-primary">
-      {viewAble && selectedMember && (
+    <div className={`${!isAccessible ? "justify-center" : ""} flex flex-col items-center w-full h-full overflow-auto p-4 md:p-8 text-primary`}>
+      {isAccessible && viewAble && selectedMember && (
         <ViewMember member={selectedMember} closeModal={(value) => handleCloseModal(value)} />
       )}
-      
-      <div className="flex flex-col items-center w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-visible md:overflow-hidden">
-        {/* Header Section */}
-        <div className="w-full bg-gradient-to-l from-primary to-[#e67238] p-4 flex flex-wrap justify-around md:justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <img className="h-12 md:h-16" src={logo} alt="Logo" />
-            <h1 className="text-xl md:text-2xl font-bold text-white">Members Directory</h1>
-          </div>
-          <div className="flex items-center mb-4 md:mb-0">
-            <FiUser className="text-white mr-2" />
-            <h2 className="text-lg font-semibold mr-2">
-              {/* Total Members:  */}
-              <span className="ml-2 bg-primary text-white px-3 py-1 rounded-full">
-                {totalMember}
-              </span>
-            </h2>
+      {!isAccessible &&
+        <div className="flex flex-col items-center w-full max-w-3xl bg-white rounded-xl shadow-lg overflow-visible md:overflow-hidden">
+          {/* Header Section */}
+          <div className="w-full bg-gradient-to-l from-primary to-[#e67238] p-4 flex flex-wrap justify-around md:justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <img className="h-12 md:h-16" src={logo} alt="Logo" />
+              <h1 className="text-xl md:text-2xl font-bold text-white">Provide access code to view this page</h1>
+            </div>
             <img className="h-16 md:h-20" src={omotolaLogo} alt="Omotola Logo" />
           </div>
-        </div>
 
-        {/* Control Panel */}
-        <div className="w-full p-4 bg-gray-50 border-b flex flex-col">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {/* Name Search - Fixed to use tempName */}
-            <InputField
-              type="text"
-              iconName="fi-sr-search"
-              placeholder="Search by name..."
-              value={tempName}
-              onChange={handleNameChange}
-            />
-            
-            {/* Gender Filter */}
-            <SelectField 
-              iconName="fi-sr-venus-double"
-              value={searchParams.gender}
-              recordList={genderOptions}
-              onChangeText={(value) => handleFilterChange('gender', value)}
-              placeholder="Filter by Gender"
-            />
-            
-            {/* Month Filter */}
-            <SelectField 
-              iconName="fi-sr-calendar"
-              value={searchParams.month}
-              recordList={monthsList}
-              onChangeText={(value) => handleFilterChange('month', value)}
-              placeholder="Filter by Month"
-            />
+          {/* Control Panel */}
+          <div className="w-1/3 p-4 bg-gray-50 border-b flex flex-col">
+            <div className="flex flex-col w-full gap-4">
+              <InputField
+                title="Access Code"
+                type="text"
+                iconName="fi fi-rr-unlock"
+                placeholder="Enter access code"
+                value={accessCode}
+                onChange={handleAccessCodeInput}
+              />
 
-            <button 
-              onClick={clearFilters}
-              className="flex items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
-            >
-              <FiX className="mr-1" /> Clear Filters
-            </button>
-          </div>
-        </div>
-
-        {/* Members Table */}
-        <div className="w-full text-sm">
-          <div className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 px-4 bg-gray-100 border-b font-semibold text-primary">
-            <div className="md:col-span-3 hidden md:block">Rank</div>
-            <div className="col-span-2 md:col-span-6">Full Name</div>
-            <div className="col-span-2 hidden md:block">Date of Birth</div>
-            <div className=" text-center">Actions</div>
-          </div>
-          
-          <div className="h-auto md:h-[320px] overflow-auto w-full">
-            {loading && (
-              <div className="w-full py-10 flex justify-center">
-                <Spinner />
-              </div>
-            )}
-            
-            {!loading && isEmpty && (
-              <div className="w-full flex flex-col items-center py-10 text-center">
-                <FiFilter className="text-4xl text-gray-400 mb-3" />
-                <div className="text-gray-500 mb-4">No records found</div>
-                <button 
-                  onClick={clearFilters}
-                  className="flex items-center bg-[#2e3c61] text-white px-4 py-2 rounded-lg hover:bg-[#1e2a48] transition"
-                >
-                  <FiRefreshCw className="mr-2" /> Reset Filters
-                </button>
-              </div>
-            )}
-            
-            {!loading && memberList.map((member) => (
-              <div 
-                key={member._id}
-                className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 px-4 border-b hover:bg-gray-50 transition-colors"
+              <button 
+                onClick={handleAccessCodeSubmit}
+                className="flex items-center justify-center bg-gradient-to-l from-primary to-[#e67238] text-white px-3 py-2 rounded-lg transition"
               >
-                <div className="md:col-span-3 font-medium hidden md:block">{member.rank}</div>
-                <div className="col-span-2 md:col-span-6 truncate"><div className="block md:hidden font-semibold">{member.rank}</div>{member.fullName}</div>
-                <div className="col-span-2 text-gray-600 hidden md:block">{member.day} of {member.month}</div>
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => { setSelectedMember(member); setViewAble(true); }}
-                    className="text-sm bg-[#e67238] hover:bg-[#d16228] text-white px-2 rounded-lg transition"
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+      {isAccessible &&
+        <div className="flex flex-col items-center w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-visible md:overflow-hidden">
+          {/* Header Section */}
+          <div className="w-full bg-gradient-to-l from-primary to-[#e67238] p-4 flex flex-wrap justify-around md:justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <img className="h-12 md:h-16" src={logo} alt="Logo" />
+              <h1 className="text-xl md:text-2xl font-bold text-white">Members Directory</h1>
+            </div>
+            <div className="flex items-center mb-4 md:mb-0">
+              <FiUser className="text-white mr-2" />
+              <h2 className="text-lg font-semibold mr-2">
+                {/* Total Members:  */}
+                <span className="ml-2 bg-primary text-white px-3 py-1 rounded-full">
+                  {totalMember}
+                </span>
+              </h2>
+              <img className="h-16 md:h-20" src={omotolaLogo} alt="Omotola Logo" />
+            </div>
+          </div>
+
+          {/* Control Panel */}
+          <div className="w-full p-4 bg-gray-50 border-b flex flex-col">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Name Search - Fixed to use tempName */}
+              <InputField
+                type="text"
+                iconName="fi-sr-search"
+                placeholder="Search by name..."
+                value={tempName}
+                onChange={handleNameChange}
+              />
+              
+              {/* Gender Filter */}
+              <SelectField 
+                iconName="fi-sr-venus-double"
+                value={searchParams.gender}
+                recordList={genderOptions}
+                onChangeText={(value) => handleFilterChange('gender', value)}
+                placeholder="Filter by Gender"
+              />
+              
+              {/* Month Filter */}
+              <SelectField 
+                iconName="fi-sr-calendar"
+                value={searchParams.month}
+                recordList={monthsList}
+                onChangeText={(value) => handleFilterChange('month', value)}
+                placeholder="Filter by Month"
+              />
+
+              <button 
+                onClick={clearFilters}
+                className="flex items-center bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-lg transition"
+              >
+                <FiX className="mr-1" /> Clear Filters
+              </button>
+            </div>
+          </div>
+
+          {/* Members Table */}
+          <div className="w-full text-sm">
+            <div className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 px-4 bg-gray-100 border-b font-semibold text-primary">
+              <div className="md:col-span-3 hidden md:block">Rank</div>
+              <div className="col-span-2 md:col-span-6">Full Name</div>
+              <div className="col-span-2 hidden md:block">Date of Birth</div>
+              <div className=" text-center">Actions</div>
+            </div>
+            
+            <div className="h-auto md:h-[320px] overflow-auto w-full">
+              {loading && (
+                <div className="w-full py-10 flex justify-center">
+                  <Spinner />
+                </div>
+              )}
+              
+              {!loading && isEmpty && (
+                <div className="w-full flex flex-col items-center py-10 text-center">
+                  <FiFilter className="text-4xl text-gray-400 mb-3" />
+                  <div className="text-gray-500 mb-4">No records found</div>
+                  <button 
+                    onClick={clearFilters}
+                    className="flex items-center bg-[#2e3c61] text-white px-4 py-2 rounded-lg hover:bg-[#1e2a48] transition"
                   >
-                    View
+                    <FiRefreshCw className="mr-2" /> Reset Filters
                   </button>
                 </div>
-              </div>
-            ))}
+              )}
+              
+              {!loading && memberList.map((member) => (
+                <div 
+                  key={member._id}
+                  className="grid grid-cols-3 md:grid-cols-12 gap-2 p-2 px-4 border-b hover:bg-gray-50 transition-colors"
+                >
+                  <div className="md:col-span-3 font-medium hidden md:block">{member.rank}</div>
+                  <div className="col-span-2 md:col-span-6 truncate"><div className="block md:hidden font-semibold">{member.rank}</div>{member.fullName}</div>
+                  <div className="col-span-2 text-gray-600 hidden md:block">{member.day} of {member.month}</div>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => { setSelectedMember(member); setViewAble(true); }}
+                      className="text-sm bg-[#e67238] hover:bg-[#d16228] text-white px-2 rounded-lg transition"
+                    >
+                      View
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
           </div>
-          
+          {/* Pagination */}
+          <Pagination 
+            currentPage={searchParams.page} 
+            pageSize={searchParams.pageSize} 
+            totalPages={totalPage} 
+            onPageSizeChange={onPageSizeChange} 
+            onPageChange={onPageChange}
+            totalItems={totalMember}
+          />
         </div>
-        {/* Pagination */}
-        <Pagination 
-          currentPage={searchParams.page} 
-          pageSize={searchParams.pageSize} 
-          totalPages={totalPage} 
-          onPageSizeChange={onPageSizeChange} 
-          onPageChange={onPageChange}
-          totalItems={totalMember}
-        />
-      </div>
+      }
     </div>
   );
 };

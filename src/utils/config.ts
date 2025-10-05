@@ -1,4 +1,5 @@
 export const config = {
+    accessCode : process.env.REACT_APP_ACCESS_CODE,
     google : {
         token : process.env.REACT_APP_GOOGLE_API_TOKEN,
     },
