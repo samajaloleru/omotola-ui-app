@@ -1,6 +1,7 @@
 export { default as Home } from './index';
 export { default as Games } from './games';
 export { default as Members } from './members';
+export { default as Countdown } from './countdown';
 // export { default as News } from './updates';
 // export { default as NewsDetail } from './updatesDetail';
 // export { default as Professionals } from './professionals';

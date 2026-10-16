@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { PiArrowLeftBold, PiArrowRightBold, PiUserPlusDuotone, PiPencilSimpleLineDuotone } from "react-icons/pi";
 import omotolaLogo from "../assets/images/omotola_logo.png";
 import Create from "../components/create";
 import Update from "../components/update";
+import { harvest, nextOccurrence, timeLeft, useNow, formatDate } from "./countdown";
 
 type ViewMode = "home" | "create" | "update";
 
@@ -32,7 +34,10 @@ export default function Home(): JSX.Element {
           Keep the parish register up to date. New members can register in a few minutes, and
           existing members can confirm or correct their details using their birthday and phone number.
         </p>
-        <img src={omotolaLogo} alt="" className="mt-10 hidden h-20 w-auto opacity-90 lg:block" />
+        <div className="mt-10 flex items-center gap-5">
+          <img src={omotolaLogo} alt="" className="hidden h-20 w-auto opacity-90 lg:block" />
+          <HarvestCountdown />
+        </div>
       </section>
 
       <section className="flex flex-col gap-4" aria-label="Choose an action">
@@ -53,6 +58,49 @@ export default function Home(): JSX.Element {
     </div>
   );
 }
+
+const HarvestCountdown = () => {
+  const now = useNow();
+  const { start, isToday } = nextOccurrence(harvest, now);
+  const { days, hours, minutes, seconds } = timeLeft(start.getTime() - now.getTime());
+  const units = [
+    { label: "days", value: days },
+    { label: "hrs", value: hours },
+    { label: "min", value: minutes },
+    { label: "sec", value: seconds },
+  ];
+
+  return (
+    <Link
+      to="/countdown"
+      className="group flex flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-card transition hover:shadow-lift"
+    >
+      <span className="flex items-center gap-2 text-sm text-muted">
+        <span className="text-lg text-gold-dark">{harvest.icon}</span>
+        <span>
+          <span className="font-medium text-ink">{harvest.name}</span>
+          {" · "}
+          {formatDate(start).replace(/ \d{4}$/, "")}
+        </span>
+      </span>
+      {isToday ? (
+        <span className="font-serif text-2xl font-semibold text-plum">Harvest is today</span>
+      ) : (
+        <>
+          <span className="sr-only">{days} days and {hours} hours to go</span>
+          <span aria-hidden className="flex items-baseline gap-3">
+            {units.map(({ label, value }) => (
+              <span key={label} className="flex items-baseline gap-1">
+                <span className="font-serif text-2xl font-semibold tabular-nums text-plum">{String(value).padStart(2, "0")}</span>
+                <span className="text-xs text-muted">{label}</span>
+              </span>
+            ))}
+          </span>
+        </>
+      )}
+    </Link>
+  );
+};
 
 const ActionCard = ({ icon, title, description, onClick, featured }: {
   icon: React.ReactNode; title: string; description: string; onClick: () => void; featured?: boolean;

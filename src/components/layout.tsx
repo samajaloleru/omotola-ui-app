@@ -27,6 +27,7 @@ const Layout = ({ children }: { children: ReactNode }) => (
         <nav className="flex items-center gap-1" aria-label="Main">
           <NavLink to="/" end className={navLinkClass}>Portal</NavLink>
           <NavLink to="/members" className={navLinkClass}>Directory</NavLink>
+          <NavLink to="/countdown" className={navLinkClass}>Countdown</NavLink>
         </nav>
       </div>
     </header>
