@@ -5,29 +5,29 @@ interface ButtonProps {
     title: string;
     onPress: () => void;
     loading?: boolean;
-    hasShadow?: boolean;
+    variant?: 'primary' | 'secondary' | 'ghost';
+    icon?: React.ReactNode;
+    className?: string;
 }
 
 const Button = ({
     title,
     onPress,
     loading,
-    hasShadow = true,
+    variant = 'primary',
+    icon,
+    className = '',
 }: ButtonProps) => {
-    if (loading) {
-        return (
-            <div className='flex flex-col items-center w-full'>
-                <Spinner />
-            </div>
-        );
-    }
-
     return (
-        <div
+        <button
+            type='button'
             onClick={onPress}
-            className='flex flex-col font-bold items-center w-full lg:text-xl text-lg bg-secondary hover:bg-white text-primary cursor-pointer p-3 rounded-lg'>
-            <div>{title}</div>
-        </div>
+            disabled={loading}
+            aria-busy={loading}
+            className={`btn-${variant} ${className}`}
+        >
+            {loading ? <Spinner size='sm' /> : <>{icon}{title}</>}
+        </button>
     );
 };
 

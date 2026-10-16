@@ -3,6 +3,7 @@ import Spinner from '../spinner';
 
 interface ModalProps {
     message: string;
+    description?: string;
     loading: boolean;
     onPress: () => void;
     closeModal: (value: boolean) => void;
@@ -10,46 +11,34 @@ interface ModalProps {
 
 const Modal = ({
     message,
+    description = 'Please confirm the details you entered are correct.',
     onPress,
     loading,
     closeModal,
 }: ModalProps) => {
-    const handleCloseModal = () => {//+
-        if (closeModal) {//+
-            closeModal(false);//+
-        }//+
-    };//
-
-    if (loading) {
-        return (
-            <div className='h-full w-full flex flex-col justify-end items-center absolute z-50  bg-opacity-40'>
-                <div className='md:w-4/5 w-full flex flex-col gap-8 items-center p-8 bg-white rounded-lg text-primary'>
-                    <div className='font-bold w-full text-2xl text-center'>Submitting ...</div>
-                    <Spinner />
-                </div>
-            </div>
-        );
-    }
     return (
-        <div className='h-full w-full flex flex-col justify-end items-center absolute z-50  bg-opacity-40'>
-            <div className='md:w-4/5 w-full flex flex-col gap-8 items-center p-8 bg-white rounded-lg text-primary'>
-                {!loading && <div className='font-bold w-full text-2xl text-center'>{message}</div>}
-                {!loading && <div className='grid grid-cols-2 gap-10 w-full items-center text-white'>
-                    <div
-                        onClick={handleCloseModal}
-                        className='flex flex-col font-bold items-center w-full lg:text-xl text-lg bg-red hover:bg-light-red cursor-pointer p-3 rounded-lg'>
-                        <div>No</div>
+        <div className='fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 backdrop-blur-[2px] sm:items-center'>
+            <div role='dialog' aria-modal='true' className='w-full max-w-md animate-rise rounded-2xl bg-white p-6 text-ink shadow-lift sm:p-8'>
+                {loading ? (
+                    <div className='flex flex-col items-center gap-4 py-6 text-plum'>
+                        <Spinner />
+                        <p className='font-serif text-xl'>Submitting…</p>
                     </div>
-                    <div
-                        onClick={onPress}
-                        className='flex flex-col font-bold items-center w-full lg:text-xl text-lg bg-green hover:bg-light-green hover:text-primary cursor-pointer p-3 rounded-lg'>
-                        <div>Yes</div>
-                    </div>
-                </div>}
-                {loading && <div className='font-bold w-full text-2xl text-center'>Submitting ...</div> }
-                {loading && <Spinner />}
+                ) : (
+                    <>
+                        <h2 className='text-2xl font-semibold'>{message}</h2>
+                        <p className='mt-2 text-muted'>{description}</p>
+                        <div className='mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
+                            <button type='button' onClick={() => closeModal(false)} className='btn-secondary'>
+                                Go back
+                            </button>
+                            <button type='button' onClick={onPress} className='btn-primary'>
+                                Yes, submit
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
-
         </div>
     );
 };

@@ -2,39 +2,38 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Modal from "./modal";
-import Spinner from "../spinner"; // Mock the Spinner component
 
 jest.mock("../spinner", () => () => <div data-testid="spinner">Loading...</div>);
 
-describe("Button Component", () => {
-  // test("renders button with correct title", () => {
-  //   render(<Button title="Click Me" onPress={() => {}} />);
-    
-  //   expect(screen.getByText("Click Me")).toBeInTheDocument();
-  // });
+describe("Modal Component", () => {
+  test("renders the message", () => {
+    render(<Modal message="Submit?" loading={false} onPress={() => {}} closeModal={() => {}} />);
 
-  // test("calls onPress when button is clicked", () => {
-  //   const handleClick = jest.fn(); // Mock function
-  //   render(<Button title="Click Me" onPress={handleClick} />);
+    expect(screen.getByText("Submit?")).toBeInTheDocument();
+  });
 
-  //   fireEvent.click(screen.getByText("Click Me")); // Simulate click
+  test("calls onPress when confirmed", () => {
+    const onPress = jest.fn();
+    render(<Modal message="Submit?" loading={false} onPress={onPress} closeModal={() => {}} />);
 
-  //   expect(handleClick).toHaveBeenCalledTimes(1);
-  // });
+    fireEvent.click(screen.getByText("Yes, submit"));
 
-  // test("shows a spinner when loading is true", () => {
-  //   render(<Button title="Click Me" onPress={() => {}} loading={true} />);
-    
-  //   expect(screen.getByTestId("spinner")).toBeInTheDocument();
-  //   expect(screen.queryByText("Click Me")).not.toBeInTheDocument();
-  // });
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
 
-  // test("does not call onPress when loading is true", () => {
-  //   const handleClick = jest.fn();
-  //   render(<Button title="Click Me" onPress={handleClick} loading={true} />);
+  test("calls closeModal with false when cancelled", () => {
+    const closeModal = jest.fn();
+    render(<Modal message="Submit?" loading={false} onPress={() => {}} closeModal={closeModal} />);
 
-  //   fireEvent.click(screen.getByTestId("spinner")); // Try clicking spinner
+    fireEvent.click(screen.getByText("Go back"));
 
-  //   expect(handleClick).not.toHaveBeenCalled();
-  // });
+    expect(closeModal).toHaveBeenCalledWith(false);
+  });
+
+  test("shows a spinner and hides actions while loading", () => {
+    render(<Modal message="Submit?" loading={true} onPress={() => {}} closeModal={() => {}} />);
+
+    expect(screen.getByTestId("spinner")).toBeInTheDocument();
+    expect(screen.queryByText("Yes, submit")).not.toBeInTheDocument();
+  });
 });

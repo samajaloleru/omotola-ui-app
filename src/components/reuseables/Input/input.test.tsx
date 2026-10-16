@@ -11,8 +11,8 @@ describe("InputField Component", () => {
         expect(screen.getByPlaceholderText("Enter your name")).toBeInTheDocument();
     });
     
-    test("renders an icon when iconName is provided", () => {
-        render(<InputField  type="text" iconName="fi-ss-user" placeholder="Enter your name"/>);
+    test("renders an icon when icon is provided", () => {
+        render(<InputField  type="text" icon={<span>@</span>} placeholder="Enter your name"/>);
         
         expect(screen.getByRole("textbox")).toBeInTheDocument();
         expect(screen.getByPlaceholderText("Enter your name")).toBeInTheDocument();

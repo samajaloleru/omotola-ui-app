@@ -11,13 +11,11 @@ const App = () => {
       window.scrollTo(0, 0);
     }
   }, [pathname]);
-  
+
   return (
-    <div className="flex flex-col justify-center items-center lg:gap-[5rem] gap-7 w-full h-screen">
-      <Routes>
-        <Route path="/*" element={<IndexRoutes/>} />
-      </Routes>
-    </div>
+    <Routes>
+      <Route path="/*" element={<IndexRoutes/>} />
+    </Routes>
   )
 }
 

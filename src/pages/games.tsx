@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
-import logo from '../assets/images/logo.png';
+import { PiArrowCounterClockwiseBold } from "react-icons/pi";
 
 type Player = "X" | "O" | null;
 
@@ -15,17 +13,17 @@ const initialBoardState: BoardState = {
   b7: null, b8: null, b9: null,
 };
 
+const winningCombinations = [
+  ["b1", "b2", "b3"], ["b4", "b5", "b6"], ["b7", "b8", "b9"], // Rows
+  ["b1", "b4", "b7"], ["b2", "b5", "b8"], ["b3", "b6", "b9"], // Columns
+  ["b1", "b5", "b9"], ["b3", "b5", "b7"],                   // Diagonals
+];
+
 const Games: React.FC = () => {
   const [board, setBoard] = useState<BoardState>(initialBoardState);
   const [currentPlayer, setCurrentPlayer] = useState<Player>("X");
-  const [message, setMessage] = useState<string>("Player X Start game");
+  const [message, setMessage] = useState<string>("Player X starts");
   const [gameOver, setGameOver] = useState<boolean>(false);
-
-  const winningCombinations = [
-    ["b1", "b2", "b3"], ["b4", "b5", "b6"], ["b7", "b8", "b9"], // Rows
-    ["b1", "b4", "b7"], ["b2", "b5", "b8"], ["b3", "b6", "b9"], // Columns
-    ["b1", "b5", "b9"], ["b3", "b5", "b7"],                   // Diagonals
-  ];
 
   const handleBoxClick = (boxId: string) => {
     if (gameOver || board[boxId]) return;
@@ -33,100 +31,57 @@ const Games: React.FC = () => {
     const newBoard = { ...board, [boxId]: currentPlayer };
     setBoard(newBoard);
 
-    // Check for a winner or tie
-    checkWinner(newBoard);
+    const winner = winningCombinations.find(([a, b, c]) =>
+      newBoard[a] && newBoard[a] === newBoard[b] && newBoard[a] === newBoard[c]
+    );
 
-    // Switch players
-    setCurrentPlayer((prev) => (prev === "X" ? "O" : "X"));
-    setMessage(`Player ${currentPlayer === "X" ? "O" : "X"} Turn`);
-  };
-
-  const checkWinner = (currentBoard: BoardState) => {
-    for (const combination of winningCombinations) {
-      const [a, b, c] = combination;
-      if (
-        currentBoard[a] &&
-        currentBoard[a] === currentBoard[b] &&
-        currentBoard[a] === currentBoard[c]
-      ) {
-        setMessage(`Player ${currentBoard[a]} won!`);
-        setGameOver(true);
-        alert(`Player ${currentBoard[a]} won!`);
-        resetGame();
-        return;
-      }
-    }
-
-    // Check for a tie
-    if (Object.values(currentBoard).every((value) => value !== null)) {
-      setMessage("Match Tie");
+    if (winner) {
+      setMessage(`Player ${newBoard[winner[0]]} wins`);
       setGameOver(true);
-      alert("Match Tie");
-      resetGame();
+      return;
     }
+
+    if (Object.values(newBoard).every((value) => value !== null)) {
+      setMessage("It's a draw");
+      setGameOver(true);
+      return;
+    }
+
+    const next = currentPlayer === "X" ? "O" : "X";
+    setCurrentPlayer(next);
+    setMessage(`Player ${next}'s turn`);
   };
 
   const resetGame = () => {
     setBoard(initialBoardState);
     setCurrentPlayer("X");
-    setMessage("Player X Start game");
+    setMessage("Player X starts");
     setGameOver(false);
   };
 
   return (
-    <div className="flex flex-col justify-center items-center w-11/12 h-full  lg:p-10 text-white  rounded-xl">
-      <div className="flex items-center justify-between w-full pa1">
-        <Link
-          to="/"
-          className="hover:bg-secondary hover:text-primary w-auto p-3 font-medium"
-        >
-          Go To Home
-        </Link>
-        <span className="fr right-[4rem]">
-          <img className="lg:h-20 h-10" src={logo} alt="Logo" />
-        </span>
+    <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center px-4 py-12">
+      <h1 className="text-5xl font-semibold text-plum">Tic tac toe</h1>
+      <p aria-live="polite" className={`mt-3 text-lg ${gameOver ? "font-medium text-gold-dark" : "text-muted"}`}>{message}</p>
+
+      <div className="mt-8 grid w-full grid-cols-3 gap-2 rounded-2xl bg-white p-2 shadow-card">
+        {Object.keys(board).map((boxId) => (
+          <button
+            key={boxId}
+            type="button"
+            onClick={() => handleBoxClick(boxId)}
+            aria-label={`Square ${boxId.slice(1)}${board[boxId] ? `, ${board[boxId]}` : ""}`}
+            className="grid aspect-square place-items-center rounded-xl bg-sand font-serif text-5xl font-semibold text-plum transition hover:bg-plum-50 active:scale-95"
+          >
+            {board[boxId]}
+          </button>
+        ))}
       </div>
 
-      <div className="flex flex-col items-center lg:w-2/5">
-        <div className="flex flex-col items-center w-full">
-          <div className="lg:text-[5rem] text-[3rem] font-semibold">Tic Tac</div>
-          <div
-            onClick={resetGame}
-            className="oswald-font hover:bg-secondary hover:text-primary font-medium cursor-pointer p-3 tc"
-          >
-            Reset Game
-          </div>
-        </div>
-        <div className="flex flex-col items-center mt-10 w-full">
-          <div className="flex relative flex-row w-full flex-wrap items-center justify-center">
-            {Object.keys(board).map((boxId) => (
-              <div
-                key={boxId}
-                className={`w-1/3 relative  ${
-                  boxId[1] !== "3" && boxId[1] !== "6" && boxId[1] !== "9" ? "border-r" : ""
-                } ${boxId[1] !== "7" && boxId[1] !== "8" && boxId[1] !== "9" ? "border-b" : ""} border-primary pa3 pointer hover-gold`}
-              >
-                <input
-                  type="text"
-                  value={board[boxId] || ""}
-                  readOnly
-                  className="bg-secondary outline-none w-full lg:h-[11rem] text-[4rem] text-primary cursor-pointer text-center"
-                  onClick={() => handleBoxClick(boxId)}
-                />
-              </div>
-
-            ))}
-          </div>
-
-          <div
-            id="print"
-            className="bg-white text-black oswald-font font-medium mt-10 px-5 py-3"
-          >
-            {message}
-          </div>
-        </div>
-
-      </div>
+      <button type="button" onClick={resetGame} className="btn-secondary mt-8">
+        <PiArrowCounterClockwiseBold />
+        New game
+      </button>
     </div>
   );
 };

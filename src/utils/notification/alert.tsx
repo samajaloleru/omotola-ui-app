@@ -1,68 +1,40 @@
 import React from 'react';
+import { PiCheckCircleFill, PiWarningCircleFill, PiInfoFill, PiXBold } from 'react-icons/pi';
 import { useAlert } from './alertcontext';
+
+const styles = {
+  success: { icon: PiCheckCircleFill, color: 'text-success', bar: 'bg-success' },
+  error: { icon: PiWarningCircleFill, color: 'text-danger', bar: 'bg-danger' },
+  info: { icon: PiInfoFill, color: 'text-plum', bar: 'bg-plum' },
+};
 
 const Alert: React.FC = () => {
   const { alerts, clearAlert } = useAlert();
 
   return (
-    <div className="absolute flex flex-col gap-3 z-50 bottom-[2rem] right-5 items-end w-screen">
-      {alerts.map((alert) => (
-        <div
-          key={alert.id}
-          className={`px-4 rounded-md border-l-[.6rem] ${
-            alert.type === 'success' ? 'border-green' : 'border-red'
-          } bg-white max-w-2xl md:px-8 text-[12px] w-4/5 md:w-[20rem]`}
-        >
-          <div className="flex justify-between py-3">
-            <div className="flex">
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-6 w-6 ${alert.type === 'success' ? 'text-green' : 'text-red'}`}
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="self-center ml-3">
-                <span
-                  className={`font-bold text-[1rem] tracking-wide capitalize ${
-                    alert.type === 'success' ? 'text-green' : 'text-red'
-                  }`}
-                >
-                  {alert.type}
-                </span>
-                <p
-                  className={`mt-2 font-medium ${
-                    alert.type === 'success' ? 'text-green' : 'text-red'
-                  }`}
-                >
-                  {alert.message}
-                </p>
-              </div>
-            </div>
-            <button onClick={() => clearAlert(alert.id)} className="self-start">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
+    <div aria-live="polite" className="pointer-events-none fixed inset-x-4 top-4 z-[60] flex flex-col items-end gap-2 sm:left-auto sm:right-6 sm:top-6">
+      {alerts.map((alert) => {
+        const { icon: Icon, color, bar } = styles[alert.type];
+        return (
+          <div
+            key={alert.id}
+            role={alert.type === 'error' ? 'alert' : 'status'}
+            className="pointer-events-auto relative flex w-full animate-rise items-start gap-3 overflow-hidden rounded-xl bg-white py-3 pl-5 pr-3 shadow-lift sm:w-[22rem]"
+          >
+            <span className={`absolute inset-y-0 left-0 w-1 ${bar}`} />
+            <Icon className={`mt-0.5 shrink-0 text-xl ${color}`} />
+            <p className="flex-1 text-sm text-ink">{alert.message}</p>
+            <button
+              type="button"
+              onClick={() => clearAlert(alert.id)}
+              aria-label="Dismiss"
+              className="rounded-md p-1 text-muted transition hover:bg-sand hover:text-ink"
+            >
+              <PiXBold />
             </button>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

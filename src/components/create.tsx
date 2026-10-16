@@ -1,32 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AiOutlineCloudUpload } from "react-icons/ai";
-import { MdDelete } from "react-icons/md";
-import Spinner from "../components/reuseables/spinner"; // Import your spinner component
+import {
+  PiUserDuotone, PiEnvelopeSimpleDuotone, PiPhoneDuotone, PiBriefcaseDuotone,
+  PiHouseLineDuotone, PiGenderIntersexDuotone, PiMedalDuotone, PiCheckCircleDuotone, PiPlusBold,
+} from "react-icons/pi";
 import InputField from "./reuseables/Input/input";
 import SelectField from "../components/reuseables/select";
+import PhotoUpload from "./reuseables/photo-upload";
 import { daysList, errorMessageMap, ErrorTypes, femaleRankList, genderOptions, maleRankList, monthsList, SUCCESSFULLY_SUBMITTED } from "../constant";
-import { client } from "../utils/client";
+import { api, uploadPhoto } from "../utils/api";
 import Button from "./reuseables/Button/button";
 import { useAlert } from "../utils/notification/alertcontext";
 import { validateEmail } from "../utils/common";
 import { ERROR_EMAIL_INVALID, ERROR_IMAGE_REQUIRED } from "../constant/errors";
-import { memberSearchQueryByDayMonthAndMobile } from "../utils/data";
 import Modal from "./reuseables/Modal/modal";
-
-type SearchParams = {
-  day: string,
-  month: string,
-  mobile: string,
-}
 
 export default function Create(): JSX.Element {
   const { addAlert } = useAlert();
   const [modal, setModal] = useState(false);
-  const [imageLoading, setImageLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resetForm, setResetForm] = useState(false);
-  const [imageAssetLocal, setImageAssetLocal] = useState<{ url: string} | null>(null); // Define proper type
-  const [imageAsset, setImageAsset] = useState<{ url: string, _id: string } | null>(null); // Define proper type
+  const [imageAssetLocal, setImageAssetLocal] = useState<{ url: string} | null>(null);
+  const [imageAssetId, setImageAssetId] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [wrongimageType, setWrongImageType] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -60,19 +54,23 @@ export default function Create(): JSX.Element {
 
     if (["image/png", "image/jpg", "image/jpeg", "image/svg+xml", "image/gif"].includes(file.type)) {
       setWrongImageType(false);
-      setImageLoading(true);
-      const previewURL = URL.createObjectURL(file);
-      setImageAssetLocal({ url: previewURL });
+      setImageAssetLocal({ url: URL.createObjectURL(file) });
       setSelectedFile(file);
-      setImageLoading(false);
+      setImageAssetId(null);
     } else {
       setWrongImageType(true);
     }
   };
 
+  const clearImage = () => {
+    setImageAssetLocal(null);
+    setSelectedFile(null);
+    setImageAssetId(null);
+  };
+
   const validateDate = (day: string, month: string): boolean => {
     const monthIndex = monthsList.indexOf(month) + 1;
-    const maxDays = new Date(2020, monthIndex, 0).getDate(); // Non-leap year
+    const maxDays = new Date(2020, monthIndex, 0).getDate(); // Leap year, so 29 Feb is allowed
     return parseInt(day) <= maxDays;
   };
 
@@ -90,7 +88,7 @@ export default function Create(): JSX.Element {
     };
 
     const errors: string[] = []; // Collect all error messages
-    
+
     Object.entries(newBody).forEach(([key, value]) => {
       if (!value && key !== "email") errors.push(errorMessageMap[key as ErrorTypes]);
       if (key === "email" && value && !validateEmail(value)) errors.push(ERROR_EMAIL_INVALID);
@@ -99,7 +97,7 @@ export default function Create(): JSX.Element {
     if (selectedDay && selectedMonth && !validateDate(selectedDay, selectedMonth)) {
       errors.push("Invalid date combination");
     }
-    
+
     if (!imageAssetLocal?.url) errors.push(ERROR_IMAGE_REQUIRED);
 
     if (errors.length > 0) {
@@ -109,70 +107,41 @@ export default function Create(): JSX.Element {
 
     setModal(true);
   };
-  
+
   const onSubmit = async () => {
     setLoading(true);
-    let uploadedImageAsset = imageAsset;
-
     try {
-      // Check for existing records
-      const exists = await fetchMembersBySearch({
-        day: selectedDay!,
-        month: selectedMonth!,
-        mobile: mobileRef.current!.value
-      });
-
-      if (exists) {
-        setModal(false);
-        setLoading(false);
-        throw new Error("Record with same details already exists");
-      }
-      
-      // Upload image if needed
-      if (selectedFile && !uploadedImageAsset?._id) {
-        const { name, type } = selectedFile;
-        const document = await client.assets.upload("image", selectedFile, { 
-          contentType: type, 
-          filename: name 
-        });
-        uploadedImageAsset = document;
-        setImageAsset(document);
+      // Reuse an already-uploaded photo if an earlier submit failed after uploading
+      let photoId = imageAssetId;
+      if (selectedFile && !photoId) {
+        photoId = await uploadPhoto(selectedFile);
+        setImageAssetId(photoId);
       }
 
-      // Final validation check
-      if (!uploadedImageAsset?._id) {
-        setModal(false);
-        setLoading(false);
+      if (!photoId) {
         throw new Error(ERROR_IMAGE_REQUIRED);
       }
 
-
-      // Create document
-      await client.create({
-        _type: "member",
-        ...Object.fromEntries(
-          Object.entries({
-            rank: selectedRank,
-            fullName: fullNameRef.current?.value,
-            mobile: mobileRef.current?.value,
-            homeAddress: homeAddressRef.current?.value,
-            email: emailRef.current?.value,
-            profession: professionRef.current?.value,
-            gender: selectedGender,
-            day: selectedDay,
-            month: selectedMonth,
-            image: {
-              _type: "image",
-              asset: { _type: "reference", _ref: uploadedImageAsset._id }
-            }
-          }).filter(([_, v]) => v !== null && v !== undefined)
-        )
+      // The server rejects duplicates (same phone + birthday) with a clear message
+      await api("members", {
+        method: "POST",
+        body: {
+          rank: selectedRank,
+          fullName: fullNameRef.current?.value,
+          mobile: mobileRef.current?.value,
+          homeAddress: homeAddressRef.current?.value,
+          email: emailRef.current?.value,
+          profession: professionRef.current?.value,
+          gender: selectedGender,
+          day: selectedDay,
+          month: selectedMonth,
+          imageAssetId: photoId,
+        },
       });
 
-      // Success handling
       addAlert({ message: SUCCESSFULLY_SUBMITTED, type: "success" });
       setResetForm(true);
-      
+
     } catch (error: any) {
       addAlert({ message: error.message || "Submission failed", type: "error" });
     } finally {
@@ -182,15 +151,7 @@ export default function Create(): JSX.Element {
   };
 
   const handleResetForm = () => {
-    // Clear input fields
-    if (fullNameRef.current) fullNameRef.current.value = "";
-    if (homeAddressRef.current) homeAddressRef.current.value = "";
-    if (mobileRef.current) mobileRef.current.value = "";
-    if (emailRef.current) emailRef.current.value = "";
-    if (professionRef.current) professionRef.current.value = "";
-
-    // Reset state variables
-    setImageAsset(null);
+    setImageAssetId(null);
     setImageAssetLocal(null);
     setSelectedFile(null);
     setSelectedRank(null);
@@ -198,167 +159,97 @@ export default function Create(): JSX.Element {
     setSelectedDay(null);
     setSelectedMonth(null);
     setWrongImageType(false);
-    setImageLoading(false);
     setResetForm(false);
   };
 
-  const fetchMembersBySearch = async (params: SearchParams): Promise<boolean> => {
-    try {
-      const data = await client.fetch(memberSearchQueryByDayMonthAndMobile(params));
-      return data?.length > 0;
-    } catch (error) {
-      console.error("Fetch error:", error);
-      return false;
-    }
-  };
-
   useEffect(() => {
-    if (selectedGender) {
-      if(selectedGender === 'Male')
-        return setRankList(maleRankList)
-      
-      if(selectedGender === 'Female')
-        return setRankList(femaleRankList)
-    }
+    if (selectedGender === 'Male') setRankList(maleRankList);
+    if (selectedGender === 'Female') setRankList(femaleRankList);
   }, [selectedGender])
-  
+
+  if (resetForm) {
+    return (
+      <div className="flex animate-rise flex-col items-center rounded-2xl bg-white px-6 py-12 text-center shadow-card">
+        <PiCheckCircleDuotone className="text-6xl text-success" />
+        <h2 className="mt-4 text-3xl font-semibold text-plum">You're registered</h2>
+        <p className="mt-2 max-w-sm text-muted">Your details have been saved to the parish register. Thank you.</p>
+        <Button title="Register another member" icon={<PiPlusBold />} variant="secondary" onPress={handleResetForm} className="mt-8" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col items-center relative w-full gap-5">
-      {!resetForm ?
-        <div className="flex flex-col relative gap-5 items-center lg:w-2/3 w-full mb-10">
-          {modal && <Modal message="Are you sure you want to proceed" loading={loading} closeModal={(value) => handleCloseModal(value)} onPress={onSubmit}/> }
-          <div className="flex w-full font-extrabold tracking-wide text-yellow lg:text-[2rem] text-2xl capitalize">
-            Registration
+    <div className="animate-rise">
+      {modal && <Modal message="Submit your registration?" loading={loading} closeModal={handleCloseModal} onPress={onSubmit}/> }
+
+      <p className="eyebrow">New member</p>
+      <h1 className="mt-2 text-3xl font-semibold text-plum sm:text-4xl">Registration</h1>
+      <p className="mt-2 text-muted">Start with your gender so we can show the right list of ranks.</p>
+
+      <div className="mt-8 flex flex-col gap-8 rounded-2xl bg-white p-5 shadow-card sm:p-8">
+        <Fieldset legend="About you">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <SelectField
+              title="Gender"
+              icon={<PiGenderIntersexDuotone />}
+              recordList={genderOptions}
+              onChangeText={(value) => { setSelectedGender(value); setSelectedRank(null); }}
+              placeholder="Select gender"
+            />
+            <SelectField
+              title="Rank"
+              icon={<PiMedalDuotone />}
+              value={selectedRank}
+              recordList={rankList}
+              onChangeText={setSelectedRank}
+              placeholder={selectedGender ? "Select your rank" : "Choose gender first"}
+              disabled={!selectedGender}
+            />
           </div>
-          <div className="flex flex-col w-full oswald-font">Please fill the form below</div>
-          <div className="bg-secondary text-primary p-3 flex flex-0.7 w-full">
-            <div className="flex justify-center items-center flex-col border-2 border-dotted p-3 w-full h-420">
-              {imageLoading && <Spinner />}
-              {wrongimageType && (
-                <p className="text-red mb-5 text-xl transition-all duration-150 ease-in">
-                  Wrong image type
-                </p>
-              )}
-              {!imageAssetLocal && !imageLoading && (
-                <label>
-                  <div className="flex flex-col cursor-pointer items-center justify-items-center h-full">
-                    <div className="flex flex-col justify-center items-center">
-                      <p className="font-bold text-2xl">
-                        <AiOutlineCloudUpload />
-                      </p>
-                      <p className="text-lg">Click to upload</p>
-                    </div>
-                    <p className="mt-32 text-center text-gray-400">
-                      Use high-quality JPG, SVG, PNG, GIF less than 20 MB 
-                    </p>
-                    <p className="text-center text-gray-400 font-bold">
-                      Please upload only garment picture
-                    </p>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/gif"
-                    name="upload-image"
-                    onChange={uploadImage}
-                    className="hidden"
-                  />
-                </label>
-              )}
-              {imageAssetLocal && !imageLoading && (
-                <div className="relative h-full">
-                  <img
-                    src={imageAssetLocal?.url}
-                    alt="uploaded-pic"
-                    className="h-full w-full"
-                  />
-                  <button
-                    type="button"
-                    className="absolute bottom-3 right-3 p-3 rounded-full bg-default text-xl cursor-pointer outline-none hover:shadow-md transition-all duration-500 ease-in-out"
-                    onClick={() => setImageAssetLocal(null)}
-                  >
-                    <MdDelete />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className={`${selectedGender ? 'lg:grid-cols-2' : ''} grid  w-full gap-3`}>
-            <div className="flex flex-col w-full gap-1">
-              <div className='font-medium tracking-wide'>
-                Gender
+          {selectedGender && (
+            <InputField type="text" title="Full name" icon={<PiUserDuotone />} placeholder="As it should appear in the register" autoComplete="name" ref={fullNameRef} />
+          )}
+        </Fieldset>
+
+        {selectedGender && (
+          <>
+            <Fieldset legend="Contact">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <InputField type="tel" title="Phone number" icon={<PiPhoneDuotone />} placeholder="0803 000 0000" autoComplete="tel" ref={mobileRef} />
+                <InputField type="email" title="Email (optional)" icon={<PiEnvelopeSimpleDuotone />} placeholder="you@example.com" autoComplete="email" ref={emailRef} />
               </div>
-              <SelectField iconName="fi-sr-venus-double" recordList={genderOptions} onChangeText={(value) => setSelectedGender(value)} placeholder="Select gender" />
-            </div>
-            {selectedGender && 
-              <div className="flex flex-col w-full gap-1">
-                <div className='font-medium tracking-wide'>
-                  What is your rank
-                </div>
-                <SelectField iconName="fi-sr-ranking-podium" recordList={rankList} onChangeText={(value) => setSelectedRank(value)} placeholder="Select your rank" />
+              <InputField type="text" title="Home address" icon={<PiHouseLineDuotone />} placeholder="Street, area, city" autoComplete="street-address" ref={homeAddressRef} />
+              <InputField type="text" title="Profession / occupation" icon={<PiBriefcaseDuotone />} placeholder="e.g. Teacher" ref={professionRef} />
+            </Fieldset>
+
+            <Fieldset legend="Birthday">
+              <div className="grid grid-cols-[1fr_2fr] gap-4">
+                <SelectField title="Day" recordList={daysList} onChangeText={setSelectedDay} placeholder="Day" />
+                <SelectField title="Month" recordList={monthsList} onChangeText={setSelectedMonth} placeholder="Month" />
               </div>
-            }
-          </div>
-          {selectedGender && 
-            <div className="flex flex-col gap-5 w-full">
-              <InputField
-                type="text"
-                title="Full Name"
-                iconName="fi-ss-user"
-                placeholder="Enter your full name"
-                ref={fullNameRef}
-              />
-              <div className="grid lg:grid-cols-2 w-full gap-3">
-                <InputField
-                  type="email"
-                  title="Email Address"
-                  iconName="fi-sr-envelopes"
-                  placeholder="Enter your email"
-                  ref={emailRef}
-                />
-                <InputField
-                  type="tel"
-                  title="Phone Number"
-                  iconName="fi-sr-phone-call"
-                  placeholder="Enter your phone no."
-                  ref={mobileRef}
-                />
-              </div>
-              <InputField
-                type="text"
-                title="Profession/Occupation"
-                iconName="fi-sr-briefcase"
-                placeholder="Enter your profession/occupation"
-                ref={professionRef}
-              />
-              <InputField
-                type="text"
-                title="Home Address"
-                iconName="fi-sr-address-book"
-                placeholder="Enter your home address"
-                ref={homeAddressRef}
-              />
-              <div className="flex flex-col w-full gap-1">
-                <div className='font-medium tracking-wide'>
-                  Date of Birth
-                </div>
-                <div className="flex flex-row w-full gap-3">
-                  <SelectField className="lg:w-1/3 w-1/2" iconName="fi-sr-calendar-clock" title="Day" recordList={daysList} onChangeText={(value) => setSelectedDay(value)} placeholder="Day" />
-                  <SelectField className="lg:w-2/3 w-1/2" iconName="fi-sr-calendar-clock" title="Month" recordList={monthsList} onChangeText={(value) => setSelectedMonth(value)} placeholder="Month" />
-                </div>
-              </div>
-            </div>
-          }
-          <Button title="Submit" onPress={validateFormAndShowModal}/>
-        </div> :
-        <div className="bg-secondary flex flex-col gap-2 w-full lg:p-10 p-3 text-primary items-center">
-          <div className="font-semibold text-[2rem] w-full text-center">Thanks for filling the form</div>
-          <div className="">Your Information has been Saved</div>
-          <div onClick={handleResetForm} className="bg-primary p-2 px-3 rounded-lg text-white text-sm cursor-pointer font-medium">
-            <i className="fi fi-sr-plus pr-2 text-[.7rem]" />
-            Add Another Record
-          </div>
+            </Fieldset>
+
+            <PhotoUpload
+              previewUrl={imageAssetLocal?.url}
+              accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/gif"
+              wrongType={wrongimageType}
+              onSelect={uploadImage}
+              onClear={clearImage}
+            />
+          </>
+        )}
+
+        <div className="flex justify-end border-t border-line pt-6">
+          <Button title="Review & submit" onPress={validateFormAndShowModal} className="w-full sm:w-auto" />
         </div>
-      }
+      </div>
     </div>
   );
 }
+
+export const Fieldset = ({ legend, children }: { legend: string; children: React.ReactNode }) => (
+  <fieldset className="flex flex-col gap-4">
+    <legend className="mb-4 font-serif text-lg font-semibold text-ink">{legend}</legend>
+    {children}
+  </fieldset>
+);

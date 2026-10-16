@@ -1,22 +1,19 @@
 import React from 'react';
-import {ThreeDots} from 'react-loader-spinner';
 
 interface SpinnerProps {
   message?: string;
+  size?: 'sm' | 'md';
 }
 
-const Spinner: React.FC<SpinnerProps> = ({message}) => {
+const Spinner: React.FC<SpinnerProps> = ({ message, size = 'md' }) => {
+  const dimension = size === 'sm' ? 'h-4 w-4 border-2' : 'h-7 w-7 border-[3px]';
+
   return (
-    <div className='flex flex-col justify-center items-center w-full h-full'>
-        <ThreeDots 
-            color='#D8CC34'
-            height={50}
-            width={50}
-        />
-
-        <p className='text-lg text-center px-2'>{message}</p>
+    <div role="status" className='flex flex-col items-center justify-center gap-3'>
+      <span className={`${dimension} animate-spin rounded-full border-current border-r-transparent opacity-80`} />
+      {message ? <p className='text-sm text-muted'>{message}</p> : <span className='sr-only'>Loading</span>}
     </div>
-  )
-}
+  );
+};
 
-export default Spinner
+export default Spinner;

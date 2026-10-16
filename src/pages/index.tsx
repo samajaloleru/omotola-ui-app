@@ -1,56 +1,76 @@
 import React, { useState } from "react";
-import logo from "../assets/images/logo.png";
+import { PiArrowLeftBold, PiArrowRightBold, PiUserPlusDuotone, PiPencilSimpleLineDuotone } from "react-icons/pi";
 import omotolaLogo from "../assets/images/omotola_logo.png";
-import Button from "../components/reuseables/Button/button";
 import Create from "../components/create";
 import Update from "../components/update";
 
+type ViewMode = "home" | "create" | "update";
 
 export default function Home(): JSX.Element {
-  const [viewMode, setViewMode] = useState<"home" | "create" | "update">("home");
- 
-  return (
-    <div className={`flex flex-col items-center w-11/12 z-30 text-white pt-10`} >
-      <div className="flex flex-col items-center lg:w-3/5 w-full lg:p-10 gap-5">
-        <div className="flex flex-row items-center justify-between w-full">
-          <div className="fr-ns right-0-ns">
-            <img className="h-20" src={logo} alt="Logo" />
-          </div>
-          <div className="fr-ns right-0-ns">
-            <img className="h-28" src={omotolaLogo} alt="Logo" />
-          </div>
-        </div>
-        {viewMode === 'home' &&
-          <div className="w-full flex flex-col gap-5">
-            <div className="flex w-full font-extrabold tracking-wide text-[2rem] justify-center capitalize">
-              Welcome To C.C.C. Omotola Cathedral Member Portal
-            </div>
-            <div className="w-full flex flex-row gap-5">
-              <Button title="Create" onPress={() => setViewMode('create')}/>
-              <Button title="Update" onPress={() => setViewMode('update')}/>
-            </div>
-            <div className="">
-              To add a new member, click the "Create" button. To update the information for an existing member, click the "Update" button.
-            </div>
-          </div>
-        }
-        {viewMode === 'create' &&
-          <div className="w-full flex flex-col gap-5 h-full overflow-auto">
-            <div className="lg:w-1/3 w-1/4">
-              <Button title="Cancel" onPress={() => setViewMode('home')}/>
-            </div>
-            <Create/>
-          </div>
-        }
-        {viewMode === 'update' &&
-          <div className="w-full flex flex-col gap-5">
-            <div className="lg:w-1/3 w-1/4">
-              <Button title="Cancel" onPress={() => setViewMode('home')}/>
-            </div>
-            <Update/>
-          </div>
-        }
+  const [viewMode, setViewMode] = useState<ViewMode>("home");
+
+  if (viewMode !== "home") {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+        <button type="button" onClick={() => setViewMode("home")} className="btn-ghost -ml-3 mb-6 px-3 py-2 text-sm">
+          <PiArrowLeftBold />
+          Back to portal
+        </button>
+        {viewMode === "create" ? <Create /> : <Update />}
       </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-4 py-12 sm:px-6 md:py-20 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+      <section className="animate-rise">
+        <p className="eyebrow">Celestial Church of Christ</p>
+        <h1 className="mt-4 text-4xl font-semibold leading-[1.05] text-plum sm:text-5xl lg:text-6xl">
+          Omotola Cathedral member portal
+        </h1>
+        <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-muted">
+          Keep the parish register up to date. New members can register in a few minutes, and
+          existing members can confirm or correct their details using their birthday and phone number.
+        </p>
+        <img src={omotolaLogo} alt="" className="mt-10 hidden h-20 w-auto opacity-90 lg:block" />
+      </section>
+
+      <section className="flex flex-col gap-4" aria-label="Choose an action">
+        <ActionCard
+          icon={<PiUserPlusDuotone />}
+          title="Register as a member"
+          description="First time here? Add your name, rank, birthday and a photo."
+          onClick={() => setViewMode("create")}
+          featured
+        />
+        <ActionCard
+          icon={<PiPencilSimpleLineDuotone />}
+          title="Update my details"
+          description="Already registered? Verify yourself, then change anything that's out of date."
+          onClick={() => setViewMode("update")}
+        />
+      </section>
     </div>
   );
 }
+
+const ActionCard = ({ icon, title, description, onClick, featured }: {
+  icon: React.ReactNode; title: string; description: string; onClick: () => void; featured?: boolean;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`group flex animate-rise items-center gap-5 rounded-2xl p-6 text-left transition duration-300 hover:-translate-y-0.5 active:scale-[0.99] sm:p-7 ${
+      featured ? "bg-plum text-white shadow-lift hover:bg-plum-600" : "bg-white text-ink shadow-card hover:shadow-lift"
+    }`}
+  >
+    <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-xl text-3xl ${featured ? "bg-white/10 text-gold-soft" : "bg-plum-50 text-plum"}`}>
+      {icon}
+    </span>
+    <span className="flex-1">
+      <span className="block font-serif text-xl font-semibold">{title}</span>
+      <span className={`mt-1 block text-sm leading-relaxed ${featured ? "text-white/75" : "text-muted"}`}>{description}</span>
+    </span>
+    <PiArrowRightBold className={`shrink-0 text-lg transition-transform duration-300 group-hover:translate-x-1 ${featured ? "text-gold-soft" : "text-muted"}`} />
+  </button>
+);

@@ -1,18 +1,18 @@
 
 export enum ErrorMessage {
-  ERROR_RANK = '⛔ Rank is required',
-  ERROR_GENDER = '⛔ Gender is required',
-  ERROR_PHONE = '⛔ Phone Number is required',
-  ERROR_PICTURE = '⛔ Picture is required',
-  ERROR_FULLNAME = '⛔ Full Name is required',
-  ERROR_DAY = '⛔ Day of Birth is required',
-  ERROR_MONTH = '⛔ Month of Birth is required',
-  ERROR_HOMEADDRESS = '⛔ Home Address is required',
-  ERROR_PROFESSION = '⛔ Profession/Occupation is required',
+  ERROR_RANK = 'Rank is required',
+  ERROR_GENDER = 'Gender is required',
+  ERROR_PHONE = 'Phone Number is required',
+  ERROR_PICTURE = 'Picture is required',
+  ERROR_FULLNAME = 'Full Name is required',
+  ERROR_DAY = 'Day of Birth is required',
+  ERROR_MONTH = 'Month of Birth is required',
+  ERROR_HOMEADDRESS = 'Home Address is required',
+  ERROR_PROFESSION = 'Profession/Occupation is required',
 }
 
-export const SUCCESSFULLY_SUBMITTED = `✅ Form Submitted Successfully`;
-export const SUCCESSFULLY_UPDATED = `✅ Details Updated Successfully`;
+export const SUCCESSFULLY_SUBMITTED = `Form Submitted Successfully`;
+export const SUCCESSFULLY_UPDATED = `Details Updated Successfully`;
 
 export enum ErrorTypes {
   ERROR_RANK = 'rank',

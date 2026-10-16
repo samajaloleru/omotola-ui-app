@@ -1,35 +1,42 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useId } from "react";
 
 interface InputProps {
   title?: string;
   type: string;
-  iconName?: string;
+  icon?: React.ReactNode;
   readonly?: boolean;
   placeholder?: string;
   isRequired?: boolean;
   value?: string;
+  autoComplete?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const InputField = forwardRef<HTMLInputElement, InputProps>(
-  ({ title, type, iconName, placeholder, readonly = false, isRequired = false, value, onChange }, ref) => {
+  ({ title, type, icon, placeholder, readonly = false, isRequired = false, value, autoComplete, onChange, onKeyDown }, ref) => {
+    const id = useId();
+
     return (
-      <div className="flex flex-col gap-2 w-full text-sm">
-        {title && <div className="font-semibold tracking-wide text-sm">{title} {isRequired && <span className="font-bold text-sm text-red-600">*</span>} </div>}
-        <div className="flex flex-row items-center py-2 bg-white border-2 border-secondary w-full">
-          {iconName && (
-            <i
-              className={`fi ${iconName} text-center px-2 mb-[-.3rem] text-sm text-primary`}
-            ></i>
-          )}
+      <div className="flex w-full flex-col gap-1.5">
+        {title && (
+          <label htmlFor={id} className="text-sm font-medium text-ink">
+            {title} {isRequired && <span className="text-danger">*</span>}
+          </label>
+        )}
+        <div className={`field ${readonly ? "bg-sand text-muted" : ""}`}>
+          {icon && <span className="shrink-0 text-lg text-muted">{icon}</span>}
           <input
+            id={id}
             type={type}
             placeholder={placeholder}
             readOnly={readonly}
             ref={ref}
             value={value}
+            autoComplete={autoComplete}
             onChange={onChange}
-            className="outline-none border-l px-2 bg-transparent text-primary border-primary w-full"
+            onKeyDown={onKeyDown}
+            className="h-full w-full bg-transparent py-2 outline-none placeholder:text-muted/70"
           />
         </div>
       </div>
